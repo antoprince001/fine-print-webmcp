@@ -22,14 +22,13 @@ Each interactable choice has a machine-readable policy declaration embedded in `
 
 | Tool | Type | Purpose |
 | --- | --- | --- |
-| `explainAction` | Read-only | Explains the actual outcome in plain language. |
-| `getConsequences` | Read-only | Returns data sharing, financial commitment, renewal, reversibility, and timing. |
-| `detectDarkPatterns` | Read-only | Returns named dark-pattern flags and definitions. |
-| `getAccessibleSummary` | Read-only | Adapts the same facts for standard, elderly-friendly, or low-vision-friendly wording. |
-| `compareChoices` | Read-only | Compares the selected choice to the safer alternative where one exists. |
-| `performSafeAction` | State-changing | Makes the lower-risk on-page choice; it never purchases, transmits data, or grants a real permission. |
+| `getChoiceDetails` | Read-only | Returns the decision group, default-selection state, and policy references. |
+| `getDecisionImpact` | Read-only | Returns data sharing, financial commitment, renewal, reversibility, and timing. |
+| `getAvailableChoices` | Read-only | Lists alternatives in the same decision group and their declared impacts. |
+| `getPolicyReferences` | Read-only | Returns the policy sections that govern a choice. |
+| `setPrivacyPreference` | State-changing | Applies a privacy-protective demo preference after confirmation. |
 
-The first five tools have `readOnlyHint: true`. `performSafeAction` is deliberately not read-only and opens an in-page confirmation sheet before it changes the demo page state.
+The first four tools have `readOnlyHint: true`. `setPrivacyPreference` is deliberately not read-only and opens an in-page confirmation sheet before it changes the demo page state. FinePrint's agent layer—not the website—uses these facts to explain accessibility concerns and identify dark patterns.
 
 ## Run locally
 
@@ -49,6 +48,6 @@ python3 -m unittest tests/test_policy_contract.py
 
 ## Suggested judge prompt
 
-> Before I accept anything on this page, explain the costs, data sharing, and dark patterns. Then choose the safer option for the cookies.
+> Before I accept anything on this page, inspect the costs, data sharing, defaults, alternatives, and policy references. Then set essential cookies only.
 
 The implementation uses the current imperative `document.modelContext.registerTool()` API as a progressive enhancement. See the [WebMCP imperative API](https://developer.chrome.com/docs/ai/webmcp/imperative-api) and [tool security guidance](https://developer.chrome.com/docs/ai/webmcp/secure-tools).

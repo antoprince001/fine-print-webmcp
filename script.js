@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let pendingSafeAction = null;
   const requestSafeAction = (profile) => new Promise((resolve) => {
     pendingSafeAction = resolve;
-    safeActionCopy.textContent = `${profile.saferChoice.why} This only changes the simulated demo page.`;
+    safeActionCopy.textContent = `FinePrint will apply “${profile.label}” to this demo page. This does not purchase anything, transmit data, or grant a real permission.`;
     safeActionModal.hidden = false;
   });
   document.getElementById("safe-action-cancel").addEventListener("click", () => {
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Annual plan claimed — $59.88 billed now.");
   });
 
-  // ---------- Utility: visual highlight hook for future WebMCP tools ----------
+  // ---------- Utility: visual highlight hook for WebMCP tool calls ----------
   window.highlightElement = function (mcpId) {
     const el = document.querySelector(`[data-mcp-id="${mcpId}"]`);
     if (!el) return;
@@ -125,70 +125,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const elementIdSchema = {
       type: "string",
-      enum: Object.keys(CONSENT_DATA),
-      description: "The data-mcp-id of the FinePrint choice to inspect."
+      enum: Object.keys(pagePolicy.elements),
+      description: "The data-mcp-id of a choice declared in this page's policy."
     };
     const inspect = (elementId) => {
       window.highlightElement(elementId);
       return getRuntimeProfile(elementId);
     };
+    const availableChoices = (elementId) => {
+      const decision = pagePolicy.elements[elementId]?.decision;
+      return Object.entries(pagePolicy.elements)
+        .filter(([, details]) => details.decision === decision)
+        .map(([choiceId, details]) => ({ choiceId, consequences: details.consequences, defaultSelected: details.defaultSelected }));
+    };
     const tools = [
       {
-        name: "explainAction",
-        title: "Explain a choice plainly",
-        description: "Explain what a FinePrint choice actually does in plain language. Use before a user accepts cookies, terms, a trial, permissions, or an upgrade.",
+        name: "getChoiceDetails",
+        title: "Get choice details",
+        description: "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, label: p.label, explanation: p.summary, policyReferences: p.clauses }); }
+        execute: ({ elementId }) => { const p = inspect(elementId); const declared = pagePolicy.elements[elementId] || {}; return result({ elementId, label: p.label, decision: declared.decision, defaultSelected: declared.defaultSelected || false, policyReferences: p.clauses }); }
       },
       {
-        name: "getConsequences",
-        title: "Get decision consequences",
-        description: "Return the structured privacy, money, recurring-charge, reversibility, and timing consequences of one FinePrint choice.",
+        name: "getDecisionImpact",
+        title: "Get decision impact",
+        description: "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
         execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, consequences: p.consequences, policyReferences: p.clauses, source: "page-declared policy" }); }
       },
       {
-        name: "detectDarkPatterns",
-        title: "Detect dark patterns",
-        description: "Identify dark-pattern techniques associated with a FinePrint choice, including pre-checked consent, hidden opt-outs, false urgency, visual asymmetry, and buried clauses.",
+        name: "getAvailableChoices",
+        title: "Get available choices",
+        description: "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, flags: p.darkPatterns.map((flag) => ({ flag, meaning: DARK_PATTERN_DEFINITIONS[flag] })) }); }
+        execute: ({ elementId }) => result({ elementId, choices: availableChoices(elementId), source: "page-declared policy" })
       },
       {
-        name: "getAccessibleSummary",
-        title: "Get accessible choice summary",
-        description: "Explain a FinePrint choice in standard, elderly-friendly, or low-vision-friendly wording. The facts remain the same; only the phrasing changes.",
-        inputSchema: { type: "object", properties: { elementId: elementIdSchema, mode: { type: "string", enum: ["standard", "elderly", "lowVision"], description: "Accessibility phrasing to use." } }, required: ["elementId", "mode"] },
-        annotations: { readOnlyHint: true },
-        execute: ({ elementId, mode }) => { const p = inspect(elementId); return result({ elementId, mode, summary: ACCESSIBLE_SUMMARY_STYLES[mode](p) }); }
-      },
-      {
-        name: "compareChoices",
-        title: "Compare a choice with its safer alternative",
-        description: "Compare the selected FinePrint choice against the lower-risk option on the page, including data sharing, costs, and reversibility.",
+        name: "getPolicyReferences",
+        title: "Get policy references",
+        description: "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); const safer = p.saferChoice && getRuntimeProfile(p.saferChoice.mcpId); return result({ selected: { label: p.label, consequences: p.consequences, policyReferences: p.clauses }, saferAlternative: safer ? { label: p.saferChoice.label, why: p.saferChoice.why, consequences: safer.consequences, policyReferences: safer.clauses } : null }); }
+        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, policyReferences: p.clauses }); }
       },
       {
-        name: "performSafeAction",
-        title: "Choose the safer on-page option",
-        description: "Perform the lower-risk FinePrint action in the page UI, such as rejecting cookies, declining permissions, or turning off partner sharing. This changes page state but never makes a purchase or shares data.",
-        inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
+        name: "setPrivacyPreference",
+        title: "Set privacy preference",
+        description: "Set an available privacy-protective preference in the demo page after a visible confirmation. It never purchases, transmits data, or grants a real permission.",
+        inputSchema: { type: "object", properties: { preference: { type: "string", enum: ["essential-cookies", "decline-recommendation-permissions"], description: "Privacy preference to apply." } }, required: ["preference"] },
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
-        execute: async ({ elementId }) => {
-          const p = inspect(elementId);
-          const targetId = p.saferChoice?.mcpId;
-          if (!targetId) return result({ changed: false, message: "This choice has no on-page safer alternative to perform." });
+        execute: async ({ preference }) => {
+          const targetId = preference === "essential-cookies" ? "cookie-reject" : "permissions-decline";
+          const p = getRuntimeProfile(targetId);
+          window.highlightElement(targetId);
           const confirmed = await requestSafeAction(p);
           if (!confirmed) return result({ changed: false, message: "The user kept the current simulated choice." });
           if (targetId === "cookie-reject") document.getElementById("cookie-reject").click();
           if (targetId === "permissions-decline") document.getElementById("permissions-decline").click();
           window.highlightElement(targetId);
-          return result({ changed: true, selected: targetId, message: `Selected safer option: ${p.saferChoice.label}.`, policyReferences: getRuntimeProfile(targetId).clauses });
+          return result({ changed: true, selected: targetId, preference, policyReferences: p.clauses });
         }
       }
     ];

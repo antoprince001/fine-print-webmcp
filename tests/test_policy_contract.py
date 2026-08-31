@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "index.html").read_text(encoding="utf-8")
 STYLES = (ROOT / "style.css").read_text(encoding="utf-8")
+SCRIPT = (ROOT / "script.js").read_text(encoding="utf-8")
 POLICY_MATCH = re.search(
     r'<script id="fineprint-policy" type="application/json">\s*(.*?)\s*</script>',
     INDEX,
@@ -44,6 +45,8 @@ class PolicyContractTests(unittest.TestCase):
                 self.assertEqual(set(entry["consequences"]), expected)
                 self.assertIsInstance(entry["clauses"], list)
                 self.assertTrue(entry["clauses"])
+                self.assertIsInstance(entry["decision"], str)
+                self.assertIsInstance(entry["defaultSelected"], bool)
 
     def test_every_poster_reference_has_a_local_asset(self):
         poster_names = re.findall(r'assets/posters/([\w-]+\.jpg)', STYLES)
@@ -51,6 +54,19 @@ class PolicyContractTests(unittest.TestCase):
         for name in poster_names:
             with self.subTest(poster=name):
                 self.assertTrue((ROOT / "assets" / "posters" / name).is_file())
+
+    def test_webmcp_surface_is_factual_and_neutral(self):
+        tool_names = set(re.findall(r'name: "([A-Za-z]+)"', SCRIPT))
+        self.assertTrue(
+            {
+                "getChoiceDetails",
+                "getDecisionImpact",
+                "getAvailableChoices",
+                "getPolicyReferences",
+                "setPrivacyPreference",
+            }.issubset(tool_names)
+        )
+        self.assertNotIn("detectDarkPatterns", tool_names)
 
 
 if __name__ == "__main__":

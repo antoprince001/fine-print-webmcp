@@ -2,9 +2,10 @@
  * FinePrint — risk profile data
  * ------------------------------------
  * Hand-authored "what actually happens" data for every trap element on the
- * page, keyed by the element's data-mcp-id. This is the content WebMCP tools
- * will read from once wired up (explainAction, getConsequences,
- * detectDarkPatterns, compareChoices, performSafeAction).
+ * page, keyed by the element's data-mcp-id. FinePrint's analysis layer uses
+ * this for plain-language explanations, accessibility adaptation, and
+ * dark-pattern detection. The website's WebMCP tools expose only neutral,
+ * machine-readable decision facts from the policy declaration in index.html.
  *
  * Schema per entry:
  *   label            - human name for the element
