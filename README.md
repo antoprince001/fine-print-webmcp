@@ -4,6 +4,8 @@ FinePrint is a deliberately deceptive streaming sign-up page that shows how a We
 
 It is a static, local-only hackathon demo. It never collects information, starts a subscription, requests real permissions, or sends data anywhere.
 
+The ten decorative poster backgrounds are local, cropped Unsplash images. Their source manifest is in [`assets/posters/SOURCES.md`](assets/posters/SOURCES.md).
+
 ## What to demonstrate
 
 The page contains five realistic traps:

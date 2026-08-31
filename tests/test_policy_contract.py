@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "index.html").read_text(encoding="utf-8")
+STYLES = (ROOT / "style.css").read_text(encoding="utf-8")
 POLICY_MATCH = re.search(
     r'<script id="fineprint-policy" type="application/json">\s*(.*?)\s*</script>',
     INDEX,
@@ -43,6 +44,13 @@ class PolicyContractTests(unittest.TestCase):
                 self.assertEqual(set(entry["consequences"]), expected)
                 self.assertIsInstance(entry["clauses"], list)
                 self.assertTrue(entry["clauses"])
+
+    def test_every_poster_reference_has_a_local_asset(self):
+        poster_names = re.findall(r'assets/posters/([\w-]+\.jpg)', STYLES)
+        self.assertEqual(len(poster_names), 10)
+        for name in poster_names:
+            with self.subTest(poster=name):
+                self.assertTrue((ROOT / "assets" / "posters" / name).is_file())
 
 
 if __name__ == "__main__":

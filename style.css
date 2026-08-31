@@ -263,6 +263,18 @@ input:focus-visible {
   align-items: flex-end;
   overflow: hidden;
   background: var(--surface-2);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  isolation: isolate;
+}
+
+.tile::after {
+  background: linear-gradient(180deg, rgba(7, 10, 17, 0.04) 35%, rgba(7, 10, 17, 0.82) 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 .tile span {
@@ -271,18 +283,19 @@ input:focus-visible {
   font-weight: 600;
   background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
   width: 100%;
+  z-index: 1;
 }
 
-.tile--1 { background: linear-gradient(160deg, #2B3A55, #17203A); }
-.tile--2 { background: linear-gradient(160deg, #3A2B4A, #1D1730); }
-.tile--3 { background: linear-gradient(160deg, #2B4A3E, #17281F); }
-.tile--4 { background: linear-gradient(160deg, #4A3A2B, #2A2013); }
-.tile--5 { background: linear-gradient(160deg, #2B3F4A, #16232A); }
-.tile--6 { background: linear-gradient(160deg, #4A2B3D, #281620); }
-.tile--7 { background: linear-gradient(160deg, #2B3A2E, #16211A); }
-.tile--8 { background: linear-gradient(160deg, #3D3A2B, #221F14); }
-.tile--9 { background: linear-gradient(160deg, #2B2F4A, #171929); }
-.tile--10 { background: linear-gradient(160deg, #4A2B2B, #291616); }
+.tile--1 { background-image: url("assets/posters/harbor-lights.jpg"); }
+.tile--2 { background-image: url("assets/posters/the-long-static.jpg"); }
+.tile--3 { background-image: url("assets/posters/quiet-company.jpg"); }
+.tile--4 { background-image: url("assets/posters/midnight-freight.jpg"); }
+.tile--5 { background-image: url("assets/posters/salt-and-signal.jpg"); }
+.tile--6 { background-image: url("assets/posters/afterglow.jpg"); }
+.tile--7 { background-image: url("assets/posters/low-country.jpg"); }
+.tile--8 { background-image: url("assets/posters/the-understudy.jpg"); }
+.tile--9 { background-image: url("assets/posters/nightshift.jpg"); }
+.tile--10 { background-image: url("assets/posters/paper-moons.jpg"); }
 
 /* ---------- Personalize strip (Trap #4 trigger) ---------- */
 .personalize-strip {
