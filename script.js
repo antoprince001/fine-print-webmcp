@@ -1,16 +1,22 @@
 /**
- * Consent Copilot — page interactivity
+ * FinePrint — page interactivity
  * -------------------------------------
- * Plain DOM behavior only — no WebMCP yet. CONSENT_DATA (data.js) is already
- * loaded and keyed by data-mcp-id, ready for tools to read from.
+ * UI behavior plus a progressive WebMCP layer. CONSENT_DATA (data.js) is
+ * loaded first and keyed by data-mcp-id, so tool output stays deterministic.
  *
- * WebMCP registration goes here later, e.g.:
- *   navigator.mcp.registerTool({ name: "explainAction", ... })
- * reading from CONSENT_DATA[elementId] and highlighting the element via
- * highlightElement(elementId) below.
+ * WebMCP tools use the current imperative browser API when it is available.
+ * The page remains fully usable in browsers that do not expose WebMCP.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  const getProfile = (elementId) => {
+    const profile = CONSENT_DATA[elementId];
+    if (!profile) throw new Error(`Unknown FinePrint element: ${elementId}`);
+    return profile;
+  };
+
+  const result = (payload) => ({ content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] });
 
   // ---------- Countdown (Trap #5 — resets on every load, on purpose) ----------
   (function countdown() {
@@ -49,10 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ---------- Terms link (Trap #2) ----------
+  const termsModal = document.getElementById("terms-modal");
   document.getElementById("terms-link").addEventListener("click", (e) => {
     e.preventDefault();
-    alert("This would open the full Terms of Service — a long document with an arbitration clause and a data-sharing clause buried well past the fold.");
+    termsModal.hidden = false;
   });
+  ["terms-close", "terms-close-bottom"].forEach((id) => document.getElementById(id).addEventListener("click", () => { termsModal.hidden = true; }));
+  termsModal.addEventListener("click", (e) => { if (e.target === termsModal) termsModal.hidden = true; });
 
   // ---------- Trial button (Trap #3) ----------
   document.getElementById("trial-btn").addEventListener("click", (e) => {
@@ -73,4 +82,85 @@ document.addEventListener("DOMContentLoaded", () => {
     el.classList.add("mcp-highlight");
     setTimeout(() => el.classList.remove("mcp-highlight"), 2000);
   };
+
+  // ---------- WebMCP: discoverable, data-driven consent tools ----------
+  // Register immediately after page setup so agents can discover the complete tool set.
+  async function registerWebMCPTools() {
+    if (!document.modelContext?.registerTool) {
+      console.info("FinePrint: WebMCP is unavailable in this browser.");
+      return;
+    }
+
+    const elementIdSchema = {
+      type: "string",
+      enum: Object.keys(CONSENT_DATA),
+      description: "The data-mcp-id of the FinePrint choice to inspect."
+    };
+    const inspect = (elementId) => {
+      window.highlightElement(elementId);
+      return getProfile(elementId);
+    };
+    const tools = [
+      {
+        name: "explainAction",
+        title: "Explain a choice plainly",
+        description: "Explain what a FinePrint choice actually does in plain language. Use before a user accepts cookies, terms, a trial, permissions, or an upgrade.",
+        inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
+        annotations: { readOnlyHint: true },
+        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, label: p.label, explanation: p.summary }); }
+      },
+      {
+        name: "getConsequences",
+        title: "Get decision consequences",
+        description: "Return the structured privacy, money, recurring-charge, reversibility, and timing consequences of one FinePrint choice.",
+        inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
+        annotations: { readOnlyHint: true },
+        execute: ({ elementId }) => result({ elementId, consequences: inspect(elementId).consequences })
+      },
+      {
+        name: "detectDarkPatterns",
+        title: "Detect dark patterns",
+        description: "Identify dark-pattern techniques associated with a FinePrint choice, including pre-checked consent, hidden opt-outs, false urgency, visual asymmetry, and buried clauses.",
+        inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
+        annotations: { readOnlyHint: true },
+        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, flags: p.darkPatterns.map((flag) => ({ flag, meaning: DARK_PATTERN_DEFINITIONS[flag] })) }); }
+      },
+      {
+        name: "getAccessibleSummary",
+        title: "Get accessible choice summary",
+        description: "Explain a FinePrint choice in standard, elderly-friendly, or low-vision-friendly wording. The facts remain the same; only the phrasing changes.",
+        inputSchema: { type: "object", properties: { elementId: elementIdSchema, mode: { type: "string", enum: ["standard", "elderly", "lowVision"], description: "Accessibility phrasing to use." } }, required: ["elementId", "mode"] },
+        annotations: { readOnlyHint: true },
+        execute: ({ elementId, mode }) => { const p = inspect(elementId); return result({ elementId, mode, summary: ACCESSIBLE_SUMMARY_STYLES[mode](p) }); }
+      },
+      {
+        name: "compareChoices",
+        title: "Compare a choice with its safer alternative",
+        description: "Compare the selected FinePrint choice against the lower-risk option on the page, including data sharing, costs, and reversibility.",
+        inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
+        annotations: { readOnlyHint: true },
+        execute: ({ elementId }) => { const p = inspect(elementId); const safer = p.saferChoice && getProfile(p.saferChoice.mcpId); return result({ selected: { label: p.label, consequences: p.consequences }, saferAlternative: safer ? { label: p.saferChoice.label, why: p.saferChoice.why, consequences: safer.consequences } : null }); }
+      },
+      {
+        name: "performSafeAction",
+        title: "Choose the safer on-page option",
+        description: "Perform the lower-risk FinePrint action in the page UI, such as rejecting cookies, declining permissions, or turning off partner sharing. This changes page state but never makes a purchase or shares data.",
+        inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
+        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
+        execute: ({ elementId }) => {
+          const p = inspect(elementId);
+          const targetId = p.saferChoice?.mcpId;
+          if (!targetId) return result({ changed: false, message: "This choice has no on-page safer alternative to perform." });
+          if (targetId === "cookie-reject") document.getElementById("cookie-reject").click();
+          if (targetId === "permissions-decline") document.getElementById("permissions-decline").click();
+          window.highlightElement(targetId);
+          return result({ changed: true, selected: targetId, message: `Selected safer option: ${p.saferChoice.label}.` });
+        }
+      }
+    ];
+    await Promise.all(tools.map((tool) => document.modelContext.registerTool(tool)));
+    console.info(`FinePrint: registered ${tools.length} WebMCP tools.`);
+  }
+
+  registerWebMCPTools().catch((error) => console.warn("FinePrint: WebMCP registration failed.", error));
 });

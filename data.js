@@ -1,5 +1,5 @@
 /**
- * Consent Copilot — risk profile data
+ * FinePrint — risk profile data
  * ------------------------------------
  * Hand-authored "what actually happens" data for every trap element on the
  * page, keyed by the element's data-mcp-id. This is the content WebMCP tools
@@ -35,6 +35,19 @@ const CONSENT_DATA = {
     },
     darkPatterns: ["visualAsymmetry", "hiddenOptOut"],
     saferChoice: { mcpId: "cookie-reject", label: "Reject all", why: "Keeps only the cookies required for the site to function — no data goes to advertising partners." }
+  },
+  "cookie-partners-row": {
+    label: "Share activity with advertising partners",
+    summary: "This optional tracking choice is already selected. Leaving it selected allows Nimbus to share browsing activity and device identifiers with advertising partners.",
+    consequences: {
+      dataShared: ["browsing activity", "device identifiers", "advertising partner identifiers"],
+      moneyCommitted: null,
+      recurringCharge: null,
+      reversible: true,
+      timeLimit: null
+    },
+    darkPatterns: ["preCheckedBox"],
+    saferChoice: { mcpId: "cookie-reject", label: "Reject all", why: "Keeps only the cookies required for the site to function and turns off partner sharing." }
   },
   "cookie-reject": {
     label: "Reject all (cookies)",
@@ -75,7 +88,7 @@ const CONSENT_DATA = {
       timeLimit: null
     },
     darkPatterns: ["preCheckedBox", "buriedClause"],
-    saferChoice: { mcpId: "terms-row", label: "Uncheck, then re-check only after reading", why: "Separates agreeing to the Terms from opting into partner marketing email, which the current checkbox bundles together." }
+    saferChoice: null
   },
   "terms-link": {
     label: "Terms of Service & Privacy Policy (full text)",
@@ -171,4 +184,10 @@ const DARK_PATTERN_DEFINITIONS = {
   falseUrgency: "A countdown or scarcity claim isn't actually tied to a real deadline.",
   visualAsymmetry: "One choice is styled to draw the eye far more than the other.",
   buriedClause: "An important term is placed where it's unlikely to be read."
+};
+
+const ACCESSIBLE_SUMMARY_STYLES = {
+  standard: (profile) => profile.summary,
+  elderly: (profile) => `Before you choose: ${profile.summary} Take your time. You do not need to decide because a timer or bright button is pressuring you.`,
+  lowVision: (profile) => `${profile.label}. ${profile.summary} Key result: ${profile.consequences.moneyCommitted || (profile.consequences.dataShared.length ? `data shared: ${profile.consequences.dataShared.join(", ")}` : "no extra data shared")}.`
 };
