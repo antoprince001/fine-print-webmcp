@@ -14,7 +14,7 @@ The page contains five realistic traps:
 4. A recommendation prompt that asks for precise location, contacts, and notifications.
 5. A founding-price countdown that resets on reload and sells an annual plan.
 
-Each interactable choice is backed by a hand-authored risk profile in `data.js`. This keeps the tool results consistent, reviewable, and separate from the presentation layer.
+Each interactable choice has a machine-readable policy declaration embedded in `index.html`. The tools read that declaration at runtime for financial, data-sharing, timing, and clause-reference facts. `data.js` provides the hand-authored dark-pattern analysis and accessible plain-English wording. This separates the site's declared facts from FinePrint's explanation layer.
 
 ## WebMCP tool surface
 
@@ -27,7 +27,7 @@ Each interactable choice is backed by a hand-authored risk profile in `data.js`.
 | `compareChoices` | Read-only | Compares the selected choice to the safer alternative where one exists. |
 | `performSafeAction` | State-changing | Makes the lower-risk on-page choice; it never purchases, transmits data, or grants a real permission. |
 
-The first five tools have `readOnlyHint: true`. `performSafeAction` is deliberately not read-only, so an agent can keep the user in the loop before changing the page state.
+The first five tools have `readOnlyHint: true`. `performSafeAction` is deliberately not read-only and opens an in-page confirmation sheet before it changes the demo page state.
 
 ## Run locally
 
@@ -38,6 +38,12 @@ python3 -m http.server 4173 --bind 127.0.0.1
 ```
 
 Open [http://127.0.0.1:4173](http://127.0.0.1:4173). The page works normally in browsers without WebMCP; it logs a short fallback message instead of failing.
+
+Run the policy-contract check with:
+
+```sh
+python3 -m unittest tests/test_policy_contract.py
+```
 
 ## Suggested judge prompt
 

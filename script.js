@@ -16,6 +16,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return profile;
   };
 
+  const policyNode = document.getElementById("fineprint-policy");
+  const pagePolicy = JSON.parse(policyNode.textContent);
+  const getRuntimeProfile = (elementId) => {
+    const editorial = getProfile(elementId);
+    const declared = pagePolicy.elements[elementId];
+    return {
+      ...editorial,
+      consequences: declared?.consequences || editorial.consequences,
+      clauses: declared?.clauses || []
+    };
+  };
+
   const result = (payload) => ({ content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] });
 
   // ---------- Countdown (Trap #5 — resets on every load, on purpose) ----------
@@ -52,6 +64,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.hidden = true;
+  });
+
+  // ---------- Safe-action confirmation ----------
+  const safeActionModal = document.getElementById("safe-action-modal");
+  const safeActionCopy = document.getElementById("safe-action-copy");
+  let pendingSafeAction = null;
+  const requestSafeAction = (profile) => new Promise((resolve) => {
+    pendingSafeAction = resolve;
+    safeActionCopy.textContent = `${profile.saferChoice.why} This only changes the simulated demo page.`;
+    safeActionModal.hidden = false;
+  });
+  document.getElementById("safe-action-cancel").addEventListener("click", () => {
+    safeActionModal.hidden = true;
+    pendingSafeAction?.(false);
+    pendingSafeAction = null;
+  });
+  document.getElementById("safe-action-confirm").addEventListener("click", () => {
+    safeActionModal.hidden = true;
+    pendingSafeAction?.(true);
+    pendingSafeAction = null;
   });
 
   // ---------- Terms link (Trap #2) ----------
@@ -98,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const inspect = (elementId) => {
       window.highlightElement(elementId);
-      return getProfile(elementId);
+      return getRuntimeProfile(elementId);
     };
     const tools = [
       {
@@ -107,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Explain what a FinePrint choice actually does in plain language. Use before a user accepts cookies, terms, a trial, permissions, or an upgrade.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, label: p.label, explanation: p.summary }); }
+        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, label: p.label, explanation: p.summary, policyReferences: p.clauses }); }
       },
       {
         name: "getConsequences",
@@ -115,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Return the structured privacy, money, recurring-charge, reversibility, and timing consequences of one FinePrint choice.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => result({ elementId, consequences: inspect(elementId).consequences })
+        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, consequences: p.consequences, policyReferences: p.clauses, source: "page-declared policy" }); }
       },
       {
         name: "detectDarkPatterns",
@@ -139,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Compare the selected FinePrint choice against the lower-risk option on the page, including data sharing, costs, and reversibility.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); const safer = p.saferChoice && getProfile(p.saferChoice.mcpId); return result({ selected: { label: p.label, consequences: p.consequences }, saferAlternative: safer ? { label: p.saferChoice.label, why: p.saferChoice.why, consequences: safer.consequences } : null }); }
+        execute: ({ elementId }) => { const p = inspect(elementId); const safer = p.saferChoice && getRuntimeProfile(p.saferChoice.mcpId); return result({ selected: { label: p.label, consequences: p.consequences, policyReferences: p.clauses }, saferAlternative: safer ? { label: p.saferChoice.label, why: p.saferChoice.why, consequences: safer.consequences, policyReferences: safer.clauses } : null }); }
       },
       {
         name: "performSafeAction",
@@ -147,14 +179,16 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Perform the lower-risk FinePrint action in the page UI, such as rejecting cookies, declining permissions, or turning off partner sharing. This changes page state but never makes a purchase or shares data.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
-        execute: ({ elementId }) => {
+        execute: async ({ elementId }) => {
           const p = inspect(elementId);
           const targetId = p.saferChoice?.mcpId;
           if (!targetId) return result({ changed: false, message: "This choice has no on-page safer alternative to perform." });
+          const confirmed = await requestSafeAction(p);
+          if (!confirmed) return result({ changed: false, message: "The user kept the current simulated choice." });
           if (targetId === "cookie-reject") document.getElementById("cookie-reject").click();
           if (targetId === "permissions-decline") document.getElementById("permissions-decline").click();
           window.highlightElement(targetId);
-          return result({ changed: true, selected: targetId, message: `Selected safer option: ${p.saferChoice.label}.` });
+          return result({ changed: true, selected: targetId, message: `Selected safer option: ${p.saferChoice.label}.`, policyReferences: getRuntimeProfile(targetId).clauses });
         }
       }
     ];
