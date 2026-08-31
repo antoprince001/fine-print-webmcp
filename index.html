@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nimbus — Stream everything</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ TOP URGENCY BANNER (Trap #5: false urgency) ============ -->
+<div class="urgency-bar" id="upgrade-banner" data-mcp-id="upgrade-banner">
+  <p>Founding Member pricing ends in <span id="countdown">14:59</span> — lock in $4.99/mo before it's gone</p>
+  <button class="urgency-bar__cta" id="upgrade-cta" data-mcp-id="upgrade-cta">Claim price</button>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="nav__brand">Nimbus</div>
+  <nav class="nav__links">
+    <a href="#browse">Browse</a>
+    <a href="#originals">Originals</a>
+    <a href="#pricing">Pricing</a>
+  </nav>
+  <button class="nav__signin">Sign in</button>
+</header>
+
+<!-- ============ HERO + SIGNUP CARD ============ -->
+<main>
+  <section class="hero">
+    <div class="hero__copy">
+      <h1>Every story,<br>one screen away.</h1>
+      <p class="hero__sub">Unlimited series, films, and originals. Cancel anytime — that part's actually true.</p>
+    </div>
+
+    <div class="signup-card">
+      <h2>Start watching tonight</h2>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" placeholder="you@example.com">
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" placeholder="••••••••">
+      </label>
+
+      <!-- Trap #2: buried T&Cs, pre-checked, understated link -->
+      <label class="checkbox-row" id="terms-row" data-mcp-id="terms-row">
+        <input type="checkbox" checked>
+        <span>I agree to the <a href="#" id="terms-link" data-mcp-id="terms-link">Terms of Service &amp; Privacy Policy</a> and to receive occasional partner offers</span>
+      </label>
+
+      <!-- Trap #3: disguised subscription -->
+      <button class="btn btn--primary btn--block" id="trial-btn" data-mcp-id="trial-btn">
+        Start your free trial
+      </button>
+      <p class="signup-card__fineprint">No commitment. Cancel whenever you like.</p>
+    </div>
+  </section>
+
+  <!-- ============ CONTENT ROWS (set dressing, makes it feel like a real site) ============ -->
+  <section class="content-row" id="browse">
+    <h3>Trending now</h3>
+    <div class="tile-track">
+      <div class="tile tile--1"><span>Harbor Lights</span></div>
+      <div class="tile tile--2"><span>The Long Static</span></div>
+      <div class="tile tile--3"><span>Quiet Company</span></div>
+      <div class="tile tile--4"><span>Midnight Freight</span></div>
+      <div class="tile tile--5"><span>Salt &amp; Signal</span></div>
+    </div>
+  </section>
+
+  <section class="content-row" id="originals">
+    <h3>Nimbus Originals</h3>
+    <div class="tile-track">
+      <div class="tile tile--6"><span>Afterglow</span></div>
+      <div class="tile tile--7"><span>Low Country</span></div>
+      <div class="tile tile--8"><span>The Understudy</span></div>
+      <div class="tile tile--9"><span>Nightshift</span></div>
+      <div class="tile tile--10"><span>Paper Moons</span></div>
+    </div>
+  </section>
+
+  <!-- Trap #4 trigger, dressed up as a helpful feature -->
+  <section class="personalize-strip">
+    <div>
+      <h3>Get picks made for you</h3>
+      <p>Turn on personalized recommendations to see shows you'll actually like.</p>
+    </div>
+    <button class="btn btn--secondary" id="personalize-btn" data-mcp-id="personalize-btn">Turn on</button>
+  </section>
+</main>
+
+<!-- ============ Trap #4: permissions modal (over-asks) ============ -->
+<div class="modal-overlay" id="permissions-modal" data-mcp-id="permissions-modal" hidden>
+  <div class="modal">
+    <h3>Enable personalized recommendations</h3>
+    <p>To personalize your experience, Nimbus would like to:</p>
+    <ul class="modal__list">
+      <li>Access your precise location</li>
+      <li>Access your contacts, to find friends already on Nimbus</li>
+      <li>Send you push notifications</li>
+    </ul>
+    <div class="modal__actions">
+      <button class="btn btn--text" id="permissions-decline" data-mcp-id="permissions-decline">Not now</button>
+      <button class="btn btn--primary" id="permissions-allow" data-mcp-id="permissions-allow">Allow all</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Trap #1: cookie banner ============ -->
+<div class="cookie-banner" id="cookie-banner" data-mcp-id="cookie-banner">
+  <p>We use cookies (and share data with our advertising partners) to improve your experience.</p>
+  <div class="cookie-banner__actions">
+    <button class="btn btn--text" id="cookie-manage" data-mcp-id="cookie-manage">Manage preferences</button>
+    <button class="btn btn--ghost" id="cookie-reject" data-mcp-id="cookie-reject">Reject all</button>
+    <button class="btn btn--primary" id="cookie-accept" data-mcp-id="cookie-accept">Accept all</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
