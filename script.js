@@ -102,6 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
   const risks = document.getElementById("fineprint-risks");
   const receipt = document.getElementById("fineprint-receipt");
+  const reviewPanel = document.querySelector(".fineprint-panel");
+  const reviewTitle = document.getElementById("fineprint-title");
+  const reviewIntro = document.querySelector(".fineprint-panel__intro");
   const showReceipt = (message) => {
     receipt.textContent = `✓ ${message}`;
     receipt.hidden = false;
@@ -120,6 +123,15 @@ document.addEventListener("DOMContentLoaded", () => {
     item.addEventListener("click", () => focusReviewItem(id));
     risks.appendChild(item);
   });
+  const revealFinePrint = (elementId) => {
+    const profile = getProfile(elementId);
+    reviewPanel.hidden = false;
+    reviewTitle.textContent = `Reviewing: ${profile.label}`;
+    reviewIntro.textContent = profile.summary;
+    risks.querySelectorAll(".fineprint-risk").forEach((item, index) => {
+      item.classList.toggle("is-active", reviewItems[index].id === elementId);
+    });
+  };
   document.getElementById("fineprint-essential").addEventListener("click", async () => {
     const changed = await applySafeAction("cookie-reject", () => document.getElementById("cookie-reject").click());
     if (changed) showReceipt("Essential cookies selected. Advertising-partner sharing is off.");
@@ -169,10 +181,12 @@ document.addEventListener("DOMContentLoaded", () => {
       description: "The data-mcp-id of a choice declared in this page's policy."
     };
     const inspect = (elementId) => {
+      revealFinePrint(elementId);
       window.highlightElement(elementId);
       return getRuntimeProfile(elementId);
     };
     const availableChoices = (elementId) => {
+      revealFinePrint(elementId);
       const decision = pagePolicy.elements[elementId]?.decision;
       return Object.entries(pagePolicy.elements)
         .filter(([, details]) => details.decision === decision)
@@ -219,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
         execute: async ({ preference }) => {
           const targetId = preference === "essential-cookies" ? "cookie-reject" : "permissions-decline";
+          revealFinePrint(targetId);
           const p = getRuntimeProfile(targetId);
           window.highlightElement(targetId);
           const confirmed = await applySafeAction(targetId, () => {

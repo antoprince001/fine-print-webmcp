@@ -1,6 +1,6 @@
 # FinePrint
 
-FinePrint is a deliberately deceptive streaming sign-up page that shows how a WebMCP-aware agent can make consent and purchase-adjacent choices understandable before a user acts. A visible FinePrint review panel turns that capability into a product experience: it calls out the five page-level pressure points, takes the user to the relevant control, offers an explicit safer cookie choice, and confirms the simulated outcome with a receipt.
+FinePrint is a deliberately deceptive streaming sign-up page that shows how a WebMCP-aware agent can make consent and purchase-adjacent choices understandable before a user acts. The FinePrint review panel is initially absent; it appears dynamically when an agent calls a WebMCP inspection tool, then explains the inspected choice, calls out the five page-level pressure points, offers an explicit safer cookie choice, and confirms the simulated outcome with a receipt.
 
 It is a static, local-only hackathon demo. It never collects information, starts a subscription, requests real permissions, or sends data anywhere.
 
