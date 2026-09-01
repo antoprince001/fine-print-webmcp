@@ -81,9 +81,15 @@ class PolicyContractTests(unittest.TestCase):
                 "getAvailableChoices",
                 "getPolicyReferences",
                 "setPrivacyPreference",
+                "lockInTimerState",
+                "applySaferDefaults",
             }.issubset(tool_names)
         )
         self.assertNotIn("detectDarkPatterns", tool_names)
+
+    def test_trial_form_uses_declarative_webmcp_metadata(self):
+        self.assertIn('toolname="startTrialReview"', INDEX)
+        self.assertIn('tooldescription="Brings the Nimbus trial form', INDEX)
 
 
 if __name__ == "__main__":

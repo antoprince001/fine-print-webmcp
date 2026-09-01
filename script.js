@@ -21,10 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const result = (payload) => ({ content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] });
 
   // ---------- Countdown (Trap #5 — resets on every load, on purpose) ----------
+  let countdownTimer;
+  let timerLocked = false;
   (function countdown() {
     let seconds = 14 * 60 + 59;
     const el = document.getElementById("countdown");
-    setInterval(() => {
+    countdownTimer = setInterval(() => {
       if (seconds <= 0) return;
       seconds -= 1;
       const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -91,8 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
   ["terms-close", "terms-close-bottom"].forEach((id) => document.getElementById(id).addEventListener("click", () => { termsModal.hidden = true; }));
   termsModal.addEventListener("click", (e) => { if (e.target === termsModal) termsModal.hidden = true; });
 
-  // ---------- Trial button (Trap #3) ----------
-  document.getElementById("trial-btn").addEventListener("click", (e) => {
+  // ---------- Declarative WebMCP trial form ----------
+  document.getElementById("trial-form").addEventListener("submit", (e) => {
     e.preventDefault();
     alert("Trial started — billing begins automatically in 14 days unless cancelled.");
   });
@@ -111,10 +113,46 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => el.classList.remove("mcp-highlight"), 2000);
   };
 
+  const showAgentOutcome = (message) => {
+    const outcome = document.getElementById("agent-outcome");
+    outcome.textContent = `Agent update: ${message}`;
+    outcome.hidden = false;
+    setTimeout(() => { outcome.hidden = true; }, 4500);
+  };
+  const applyEssentialCookies = () => {
+    const checkbox = document.getElementById("cookie-partners");
+    checkbox.checked = false;
+    checkbox.disabled = true;
+    cookieBanner.classList.add("agent-resolved");
+    document.getElementById("cookie-agent-state").hidden = false;
+    window.highlightElement("cookie-partners-row");
+  };
+  const lockTimerState = () => {
+    if (timerLocked) return;
+    timerLocked = true;
+    clearInterval(countdownTimer);
+    document.getElementById("upgrade-banner").classList.add("is-locked");
+    document.getElementById("countdown").textContent = "NO DEADLINE";
+    document.getElementById("upgrade-cta").textContent = "Price held";
+    window.highlightElement("upgrade-cta");
+  };
+  const applySaferDefaults = () => {
+    applyEssentialCookies();
+    document.querySelector("#terms-row input").checked = false;
+    document.getElementById("terms-row").classList.add("agent-resolved");
+    document.querySelector(".signup-card").classList.add("agent-resolved");
+    document.getElementById("trial-btn").textContent = "Review $49.99/month before starting";
+    document.querySelector(".personalize-strip").classList.add("agent-resolved");
+    document.getElementById("personalize-btn").textContent = "Watch-history recommendations on";
+    lockTimerState();
+    ["terms-row", "trial-btn", "personalize-btn"].forEach(window.highlightElement);
+  };
+
   // ---------- WebMCP: discoverable, data-driven consent tools ----------
   // Register immediately after page setup so agents can discover the complete tool set.
   async function registerWebMCPTools() {
     if (!document.modelContext?.registerTool) {
+      document.getElementById("agent-status-copy").textContent = "Agent tools unavailable in this browser";
       console.info("FinePrint: WebMCP is unavailable in this browser.");
       return;
     }
@@ -129,6 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return getRuntimeProfile(elementId);
     };
     const availableChoices = (elementId) => {
+      window.highlightElement(elementId);
       const decision = pagePolicy.elements[elementId]?.decision;
       return Object.entries(pagePolicy.elements)
         .filter(([, details]) => details.decision === decision)
@@ -178,16 +217,47 @@ document.addEventListener("DOMContentLoaded", () => {
           const p = getRuntimeProfile(targetId);
           window.highlightElement(targetId);
           const confirmed = await applySafeAction(targetId, () => {
-            if (targetId === "cookie-reject") document.getElementById("cookie-reject").click();
+            if (targetId === "cookie-reject") applyEssentialCookies();
             if (targetId === "permissions-decline") document.getElementById("permissions-decline").click();
           });
           if (!confirmed) return result({ changed: false, message: "The user kept the current simulated choice." });
           window.highlightElement(targetId);
+          showAgentOutcome(preference === "essential-cookies" ? "essential cookies selected; partner sharing is off." : "location, contacts, and notifications were declined.");
           return result({ changed: true, selected: targetId, preference, policyReferences: p.clauses });
+        }
+      },
+      {
+        name: "lockInTimerState",
+        title: "Lock in the timer state",
+        description: "Freeze the demo offer timer after visible confirmation, making the no-deadline offer state explicit. This does not buy or reserve a plan.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
+        execute: async () => {
+          const confirmed = await requestSafeAction({ label: "Lock in the offer timer state" });
+          if (!confirmed) return result({ changed: false, message: "The user kept the running demo timer." });
+          lockTimerState();
+          showAgentOutcome("the offer timer is frozen; no deadline applies.");
+          return result({ changed: true, timerLocked: true, offerHasRealDeadline: false });
+        }
+      },
+      {
+        name: "applySaferDefaults",
+        title: "Apply safer defaults",
+        description: "Apply the available privacy-protective and no-pressure defaults across the demo after visible confirmation. This never starts a trial, buys a plan, or transmits data.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
+        execute: async () => {
+          const confirmed = await requestSafeAction({ label: "Apply safer defaults across this demo" });
+          if (!confirmed) return result({ changed: false, message: "The user kept the current demo defaults." });
+          applySaferDefaults();
+          showAgentOutcome("five safer defaults are now visible on the page.");
+          return result({ changed: true, changes: ["partner sharing off", "marketing consent unchecked", "trial renewal surfaced", "unnecessary permissions avoided", "timer frozen"] });
         }
       }
     ];
     await Promise.all(tools.map((tool) => document.modelContext.registerTool(tool)));
+    document.getElementById("agent-status").classList.add("is-ready");
+    document.getElementById("agent-status-copy").textContent = "Agent tools ready";
     console.info(`FinePrint: registered ${tools.length} WebMCP tools.`);
   }
 

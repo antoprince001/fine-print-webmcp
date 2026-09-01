@@ -27,8 +27,10 @@ Each interactable choice has a machine-readable policy declaration embedded in `
 | `getAvailableChoices` | Read-only | Lists alternatives in the same decision group and their declared impacts. |
 | `getPolicyReferences` | Read-only | Returns the policy sections that govern a choice. |
 | `setPrivacyPreference` | State-changing | Applies a privacy-protective demo preference after confirmation. |
+| `lockInTimerState` | State-changing | Freezes the demo timer after confirmation and makes the no-deadline state visible. |
+| `applySaferDefaults` | State-changing | Applies five visible privacy- and pressure-reducing defaults after confirmation. |
 
-The first four tools have `readOnlyHint: true`. `setPrivacyPreference` is deliberately not read-only and opens an in-page confirmation sheet before it changes the demo page state. An external agent can use the read-only evidence to advise the user, then request the state change only after the user approves it.
+The first four tools have `readOnlyHint: true`. The three state-changing tools open an in-page confirmation sheet before changing the demo state. Read-only calls briefly highlight their related UI, while action tools make their resulting state visibly clear on the page.
 
 ## Run locally
 
@@ -48,6 +50,6 @@ python3 -m unittest tests/test_policy_contract.py
 
 ## Suggested judge prompt
 
-> Before I accept anything on this page, inspect the costs, data sharing, defaults, alternatives, and policy references. Then set essential cookies only.
+> Before I accept anything on this page, inspect the costs, data sharing, defaults, alternatives, offer disclosures, and policy references. Then explain the risks, apply safer defaults, and freeze the timer if there is no real deadline.
 
 The implementation uses the current imperative `document.modelContext.registerTool()` API as a progressive enhancement. See the [WebMCP imperative API](https://developer.chrome.com/docs/ai/webmcp/imperative-api) and [tool security guidance](https://developer.chrome.com/docs/ai/webmcp/secure-tools).
