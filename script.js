@@ -58,6 +58,37 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === modal) modal.hidden = true;
   });
 
+  // ---------- Simulated Nimbus account journey ----------
+  const screens = {
+    signIn: document.getElementById("signin-screen"),
+    plans: document.getElementById("plans-screen"),
+    detail: document.getElementById("detail-screen")
+  };
+  const showScreen = (screen) => Object.values(screens).forEach((element) => { element.hidden = element !== screen; });
+  const closeFlow = () => showScreen(null);
+  document.querySelector(".nav__signin").addEventListener("click", () => showScreen(screens.signIn));
+  document.getElementById("signin-back").addEventListener("click", closeFlow);
+  document.getElementById("signin-continue").addEventListener("click", () => showScreen(screens.plans));
+  document.getElementById("plans-back").addEventListener("click", () => showScreen(screens.signIn));
+  document.querySelectorAll(".choose-plan").forEach((button) => button.addEventListener("click", () => {
+    closeFlow();
+    document.body.classList.add("is-signed-in");
+    document.getElementById("membership-dock").hidden = false;
+    document.querySelector(".nav__signin").textContent = "Account";
+    showAgentOutcome("you are signed in and your membership is ready.");
+  }));
+  document.getElementById("detail-back").addEventListener("click", closeFlow);
+  document.querySelectorAll(".tile").forEach((tile) => {
+    tile.tabIndex = 0;
+    tile.setAttribute("role", "button");
+    const openDetail = () => {
+      document.getElementById("detail-title").textContent = tile.textContent.trim();
+      showScreen(screens.detail);
+    };
+    tile.addEventListener("click", openDetail);
+    tile.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDetail(); } });
+  });
+
   // ---------- Safe-action confirmation ----------
   const safeActionModal = document.getElementById("safe-action-modal");
   const safeActionCopy = document.getElementById("safe-action-copy");

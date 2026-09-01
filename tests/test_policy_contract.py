@@ -91,6 +91,12 @@ class PolicyContractTests(unittest.TestCase):
         self.assertIn('toolname="startTrialReview"', INDEX)
         self.assertIn('tooldescription="Brings the Nimbus trial form', INDEX)
 
+    def test_demo_has_a_multistep_member_flow(self):
+        for screen in ("signin-screen", "plans-screen", "detail-screen", "membership-dock"):
+            with self.subTest(screen=screen):
+                self.assertIn(f'id="{screen}"', INDEX)
+        self.assertIn('const showScreen', SCRIPT)
+
 
 if __name__ == "__main__":
     unittest.main()
