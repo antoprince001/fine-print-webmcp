@@ -94,24 +94,6 @@
   </section>
 </main>
 
-<!-- FinePrint's visible product layer: it explains the page without changing it. -->
-<aside class="fineprint-panel" aria-labelledby="fineprint-title" data-mcp-id="fineprint-review" hidden>
-  <div class="fineprint-panel__head">
-    <div class="fineprint-mark" aria-hidden="true">F</div>
-    <div>
-      <p class="eyebrow">FinePrint review</p>
-      <h2 id="fineprint-title">Pause before you commit</h2>
-    </div>
-  </div>
-  <p class="fineprint-panel__intro">We found <strong>5 pressure points</strong> on this page. Here is what matters before you continue.</p>
-  <div class="fineprint-risks" id="fineprint-risks"></div>
-  <div class="fineprint-panel__actions">
-    <button class="fineprint-safe-button" id="fineprint-essential">Use essential cookies only</button>
-    <button class="fineprint-link-button" id="fineprint-review-all">Review page signals</button>
-  </div>
-  <div class="fineprint-receipt" id="fineprint-receipt" hidden aria-live="polite"></div>
-</aside>
-
 <!-- ============ Trap #4: permissions modal (over-asks) ============ -->
 <div class="modal-overlay" id="permissions-modal" data-mcp-id="permissions-modal" hidden>
   <div class="modal">
@@ -193,19 +175,19 @@
 {
   "version": "1.0",
   "elements": {
-    "cookie-accept": { "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": ["browsing activity", "device identifiers", "shared with ~40 advertising partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: advertising-partner sharing"] },
-    "cookie-reject": { "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: essential cookies only"] },
-    "cookie-partners-row": { "decision": "cookie-consent", "defaultSelected": true, "consequences": { "dataShared": ["browsing activity", "device identifiers", "advertising partner identifiers"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: partner sharing"] },
-    "terms-row": { "decision": "account-terms", "defaultSelected": true, "consequences": { "dataShared": ["email address shared with marketing partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["Terms §5: Communications"] },
-    "terms-link": { "decision": "account-terms", "defaultSelected": false, "consequences": { "dataShared": ["usage data", "device data", "shared with affiliates"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["Terms §4: How information is shared", "Terms §6: Dispute resolution and arbitration"] },
-    "trial-btn": { "decision": "trial-membership", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$49.99/month after the trial, charged automatically", "recurringCharge": "$49.99/month", "reversible": true, "timeLimit": "14-day trial — cancel before it ends to avoid the charge" }, "clauses": ["Terms §2: Your account and trial"] },
-    "permissions-allow": { "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": ["precise location", "contacts list", "push notification access"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request"] },
-    "permissions-decline": { "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request: decline"] },
-    "upgrade-cta": { "decision": "founding-member-offer", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$59.88 billed immediately (annual plan)", "recurringCharge": "$59.88/year", "reversible": true, "timeLimit": null }, "clauses": ["Founding Member offer: annual billing"] }
+    "cookie-accept": { "label": "Accept all cookies", "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": ["browsing activity", "device identifiers", "shared with ~40 advertising partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: advertising-partner sharing"] },
+    "cookie-reject": { "label": "Reject all cookies", "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: essential cookies only"] },
+    "cookie-partners-row": { "label": "Share activity with advertising partners", "decision": "cookie-consent", "defaultSelected": true, "consequences": { "dataShared": ["browsing activity", "device identifiers", "advertising partner identifiers"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: partner sharing"] },
+    "terms-row": { "label": "Terms and partner-offers consent", "decision": "account-terms", "defaultSelected": true, "consequences": { "dataShared": ["email address shared with marketing partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["Terms §5: Communications"] },
+    "terms-link": { "label": "Terms of Service and Privacy Policy", "decision": "account-terms", "defaultSelected": false, "consequences": { "dataShared": ["usage data", "device data", "shared with affiliates"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["Terms §4: How information is shared", "Terms §6: Dispute resolution and arbitration"] },
+    "trial-btn": { "label": "Start your free trial", "decision": "trial-membership", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$49.99/month after the trial, charged automatically", "recurringCharge": "$49.99/month", "reversible": true, "timeLimit": "14-day trial — cancel before it ends to avoid the charge" }, "clauses": ["Terms §2: Your account and trial"] },
+    "personalize-btn": { "label": "Turn on personalized recommendations", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request"] },
+    "permissions-allow": { "label": "Allow all recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": ["precise location", "contacts list", "push notification access"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request"] },
+    "permissions-decline": { "label": "Decline recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request: decline"] },
+    "upgrade-cta": { "label": "Claim founding member price", "decision": "founding-member-offer", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$59.88 billed immediately (annual plan)", "recurringCharge": "$59.88/year", "reversible": true, "timeLimit": null }, "disclosures": { "displayedPrice": "$4.99/month", "billing": "annual plan billed upfront", "hasRealDeadline": false, "timerResetsOnReload": true }, "clauses": ["Founding Member offer: annual billing"] }
   }
 }
 </script>
-<script src="data.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

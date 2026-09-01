@@ -1,6 +1,6 @@
 # FinePrint
 
-FinePrint is a deliberately deceptive streaming sign-up page that shows how a WebMCP-aware agent can make consent and purchase-adjacent choices understandable before a user acts. The FinePrint review panel is initially absent; it appears dynamically when an agent calls a WebMCP inspection tool, then explains the inspected choice, calls out the five page-level pressure points, offers an explicit safer cookie choice, and confirms the simulated outcome with a receipt.
+FinePrint is a deliberately deceptive streaming sign-up page that shows how an external WebMCP-aware agent can make consent and purchase-adjacent choices understandable before a user acts. The site deliberately does not diagnose its own dark patterns: the agent discovers the declared consequences, defaults, alternatives, terms, and offer-timer behavior through WebMCP tools, then explains them to the user.
 
 It is a static, local-only hackathon demo. It never collects information, starts a subscription, requests real permissions, or sends data anywhere.
 
@@ -16,7 +16,7 @@ The page contains five realistic traps:
 4. A recommendation prompt that asks for precise location, contacts, and notifications.
 5. A founding-price countdown that resets on reload and sells an annual plan.
 
-Each interactable choice has a machine-readable policy declaration embedded in `index.html`. The tools read that declaration at runtime for financial, data-sharing, timing, and clause-reference facts. `data.js` provides the hand-authored dark-pattern analysis and accessible plain-English wording. This separates the site's declared facts from FinePrint's explanation layer.
+Each interactable choice has a machine-readable policy declaration embedded in `index.html`. The tools read that declaration at runtime for financial, data-sharing, timing, offer-disclosure, and clause-reference facts. The external agent—not the site—interprets those facts and identifies dark patterns.
 
 ## WebMCP tool surface
 
@@ -28,7 +28,7 @@ Each interactable choice has a machine-readable policy declaration embedded in `
 | `getPolicyReferences` | Read-only | Returns the policy sections that govern a choice. |
 | `setPrivacyPreference` | State-changing | Applies a privacy-protective demo preference after confirmation. |
 
-The first four tools have `readOnlyHint: true`. `setPrivacyPreference` is deliberately not read-only and opens an in-page confirmation sheet before it changes the demo page state. FinePrint's agent layer—not the website—uses these facts to explain accessibility concerns and identify dark patterns.
+The first four tools have `readOnlyHint: true`. `setPrivacyPreference` is deliberately not read-only and opens an in-page confirmation sheet before it changes the demo page state. An external agent can use the read-only evidence to advise the user, then request the state change only after the user approves it.
 
 ## Run locally
 

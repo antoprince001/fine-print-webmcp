@@ -47,6 +47,23 @@ class PolicyContractTests(unittest.TestCase):
                 self.assertTrue(entry["clauses"])
                 self.assertIsInstance(entry["decision"], str)
                 self.assertIsInstance(entry["defaultSelected"], bool)
+                self.assertIsInstance(entry["label"], str)
+
+    def test_offer_timer_behavior_is_declared_for_webmcp(self):
+        offer = self.policy["elements"]["upgrade-cta"]
+        self.assertEqual(
+            offer["disclosures"],
+            {
+                "displayedPrice": "$4.99/month",
+                "billing": "annual plan billed upfront",
+                "hasRealDeadline": False,
+                "timerResetsOnReload": True,
+            },
+        )
+
+    def test_webmcp_does_not_depend_on_the_editorial_analysis_file(self):
+        self.assertNotIn('src="data.js"', INDEX)
+        self.assertNotIn("CONSENT_DATA", SCRIPT)
 
     def test_every_poster_reference_has_a_local_asset(self):
         poster_names = re.findall(r'assets/posters/([\w-]+\.jpg)', STYLES)

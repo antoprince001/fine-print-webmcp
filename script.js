@@ -1,8 +1,8 @@
 /**
  * FinePrint — page interactivity
  * -------------------------------------
- * UI behavior plus a progressive WebMCP layer. CONSENT_DATA (data.js) is
- * loaded first and keyed by data-mcp-id, so tool output stays deterministic.
+ * UI behavior plus a progressive WebMCP layer. Tool output comes exclusively
+ * from the page's machine-readable policy declaration.
  *
  * WebMCP tools use the current imperative browser API when it is available.
  * The page remains fully usable in browsers that do not expose WebMCP.
@@ -10,22 +10,12 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const getProfile = (elementId) => {
-    const profile = CONSENT_DATA[elementId];
-    if (!profile) throw new Error(`Unknown FinePrint element: ${elementId}`);
-    return profile;
-  };
-
   const policyNode = document.getElementById("fineprint-policy");
   const pagePolicy = JSON.parse(policyNode.textContent);
   const getRuntimeProfile = (elementId) => {
-    const editorial = getProfile(elementId);
     const declared = pagePolicy.elements[elementId];
-    return {
-      ...editorial,
-      consequences: declared?.consequences || editorial.consequences,
-      clauses: declared?.clauses || []
-    };
+    if (!declared) throw new Error(`Unknown FinePrint element: ${elementId}`);
+    return declared;
   };
 
   const result = (payload) => ({ content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] });
@@ -92,52 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
     pendingSafeAction = null;
   });
 
-  // ---------- FinePrint: visible review and safe-choice receipt ----------
-  const reviewItems = [
-    { id: "cookie-partners-row", title: "Tracking is already on", detail: "Your activity is pre-selected for ad partners." },
-    { id: "terms-row", title: "Terms bundle marketing", detail: "One checkbox also opts you into partner offers." },
-    { id: "trial-btn", title: "Free becomes $49.99/month", detail: "Auto-renews after 14 days unless cancelled." },
-    { id: "personalize-btn", title: "Recommendations over-ask", detail: "The prompt requests location, contacts, and alerts." },
-    { id: "upgrade-cta", title: "The timer is artificial", detail: "The annual-plan countdown resets on reload." }
-  ];
-  const risks = document.getElementById("fineprint-risks");
-  const receipt = document.getElementById("fineprint-receipt");
-  const reviewPanel = document.querySelector(".fineprint-panel");
-  const reviewTitle = document.getElementById("fineprint-title");
-  const reviewIntro = document.querySelector(".fineprint-panel__intro");
-  const showReceipt = (message) => {
-    receipt.textContent = `✓ ${message}`;
-    receipt.hidden = false;
-  };
-  const focusReviewItem = (id) => {
-    const target = document.querySelector(`[data-mcp-id="${id}"]`) || document.getElementById(id);
-    if (!target) return;
-    target.scrollIntoView({ behavior: "smooth", block: "center" });
-    window.highlightElement(id);
-  };
-  reviewItems.forEach(({ id, title, detail }, index) => {
-    const item = document.createElement("button");
-    item.type = "button";
-    item.className = "fineprint-risk";
-    item.innerHTML = `<span class="fineprint-risk__number">${index + 1}</span><span><strong>${title}</strong><span>${detail}</span></span><span class="fineprint-risk__arrow" aria-hidden="true">›</span>`;
-    item.addEventListener("click", () => focusReviewItem(id));
-    risks.appendChild(item);
-  });
-  const revealFinePrint = (elementId) => {
-    const profile = getProfile(elementId);
-    reviewPanel.hidden = false;
-    reviewTitle.textContent = `Reviewing: ${profile.label}`;
-    reviewIntro.textContent = profile.summary;
-    risks.querySelectorAll(".fineprint-risk").forEach((item, index) => {
-      item.classList.toggle("is-active", reviewItems[index].id === elementId);
-    });
-  };
-  document.getElementById("fineprint-essential").addEventListener("click", async () => {
-    const changed = await applySafeAction("cookie-reject", () => document.getElementById("cookie-reject").click());
-    if (changed) showReceipt("Essential cookies selected. Advertising-partner sharing is off.");
-  });
-  document.getElementById("fineprint-review-all").addEventListener("click", () => focusReviewItem("upgrade-cta"));
-
   // ---------- Terms link (Trap #2) ----------
   const termsModal = document.getElementById("terms-modal");
   document.getElementById("terms-link").addEventListener("click", (e) => {
@@ -181,16 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
       description: "The data-mcp-id of a choice declared in this page's policy."
     };
     const inspect = (elementId) => {
-      revealFinePrint(elementId);
       window.highlightElement(elementId);
       return getRuntimeProfile(elementId);
     };
     const availableChoices = (elementId) => {
-      revealFinePrint(elementId);
       const decision = pagePolicy.elements[elementId]?.decision;
       return Object.entries(pagePolicy.elements)
         .filter(([, details]) => details.decision === decision)
-        .map(([choiceId, details]) => ({ choiceId, consequences: details.consequences, defaultSelected: details.defaultSelected }));
+        .map(([choiceId, details]) => ({ choiceId, label: details.label, consequences: details.consequences, disclosures: details.disclosures || {}, defaultSelected: details.defaultSelected }));
     };
     const tools = [
       {
@@ -199,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); const declared = pagePolicy.elements[elementId] || {}; return result({ elementId, label: p.label, decision: declared.decision, defaultSelected: declared.defaultSelected || false, policyReferences: p.clauses }); }
+        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, label: p.label, decision: p.decision, defaultSelected: p.defaultSelected, policyReferences: p.clauses }); }
       },
       {
         name: "getDecisionImpact",
@@ -207,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, consequences: p.consequences, policyReferences: p.clauses, source: "page-declared policy" }); }
+        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, consequences: p.consequences, disclosures: p.disclosures || {}, policyReferences: p.clauses, source: "page-declared policy" }); }
       },
       {
         name: "getAvailableChoices",
@@ -233,7 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
         execute: async ({ preference }) => {
           const targetId = preference === "essential-cookies" ? "cookie-reject" : "permissions-decline";
-          revealFinePrint(targetId);
           const p = getRuntimeProfile(targetId);
           window.highlightElement(targetId);
           const confirmed = await applySafeAction(targetId, () => {
