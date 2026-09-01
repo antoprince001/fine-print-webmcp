@@ -94,6 +94,24 @@
   </section>
 </main>
 
+<!-- FinePrint's visible product layer: it explains the page without changing it. -->
+<aside class="fineprint-panel" aria-labelledby="fineprint-title" data-mcp-id="fineprint-review">
+  <div class="fineprint-panel__head">
+    <div class="fineprint-mark" aria-hidden="true">F</div>
+    <div>
+      <p class="eyebrow">FinePrint review</p>
+      <h2 id="fineprint-title">Pause before you commit</h2>
+    </div>
+  </div>
+  <p class="fineprint-panel__intro">We found <strong>5 pressure points</strong> on this page. Here is what matters before you continue.</p>
+  <div class="fineprint-risks" id="fineprint-risks"></div>
+  <div class="fineprint-panel__actions">
+    <button class="fineprint-safe-button" id="fineprint-essential">Use essential cookies only</button>
+    <button class="fineprint-link-button" id="fineprint-review-all">Review page signals</button>
+  </div>
+  <div class="fineprint-receipt" id="fineprint-receipt" hidden aria-live="polite"></div>
+</aside>
+
 <!-- ============ Trap #4: permissions modal (over-asks) ============ -->
 <div class="modal-overlay" id="permissions-modal" data-mcp-id="permissions-modal" hidden>
   <div class="modal">

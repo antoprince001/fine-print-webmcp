@@ -75,6 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
     safeActionCopy.textContent = `FinePrint will apply “${profile.label}” to this demo page. This does not purchase anything, transmit data, or grant a real permission.`;
     safeActionModal.hidden = false;
   });
+  const applySafeAction = async (elementId, callback) => {
+    const confirmed = await requestSafeAction(getRuntimeProfile(elementId));
+    if (!confirmed) return false;
+    callback();
+    return true;
+  };
   document.getElementById("safe-action-cancel").addEventListener("click", () => {
     safeActionModal.hidden = true;
     pendingSafeAction?.(false);
@@ -85,6 +91,40 @@ document.addEventListener("DOMContentLoaded", () => {
     pendingSafeAction?.(true);
     pendingSafeAction = null;
   });
+
+  // ---------- FinePrint: visible review and safe-choice receipt ----------
+  const reviewItems = [
+    { id: "cookie-partners-row", title: "Tracking is already on", detail: "Your activity is pre-selected for ad partners." },
+    { id: "terms-row", title: "Terms bundle marketing", detail: "One checkbox also opts you into partner offers." },
+    { id: "trial-btn", title: "Free becomes $49.99/month", detail: "Auto-renews after 14 days unless cancelled." },
+    { id: "personalize-btn", title: "Recommendations over-ask", detail: "The prompt requests location, contacts, and alerts." },
+    { id: "upgrade-cta", title: "The timer is artificial", detail: "The annual-plan countdown resets on reload." }
+  ];
+  const risks = document.getElementById("fineprint-risks");
+  const receipt = document.getElementById("fineprint-receipt");
+  const showReceipt = (message) => {
+    receipt.textContent = `✓ ${message}`;
+    receipt.hidden = false;
+  };
+  const focusReviewItem = (id) => {
+    const target = document.querySelector(`[data-mcp-id="${id}"]`) || document.getElementById(id);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.highlightElement(id);
+  };
+  reviewItems.forEach(({ id, title, detail }, index) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "fineprint-risk";
+    item.innerHTML = `<span class="fineprint-risk__number">${index + 1}</span><span><strong>${title}</strong><span>${detail}</span></span><span class="fineprint-risk__arrow" aria-hidden="true">›</span>`;
+    item.addEventListener("click", () => focusReviewItem(id));
+    risks.appendChild(item);
+  });
+  document.getElementById("fineprint-essential").addEventListener("click", async () => {
+    const changed = await applySafeAction("cookie-reject", () => document.getElementById("cookie-reject").click());
+    if (changed) showReceipt("Essential cookies selected. Advertising-partner sharing is off.");
+  });
+  document.getElementById("fineprint-review-all").addEventListener("click", () => focusReviewItem("upgrade-cta"));
 
   // ---------- Terms link (Trap #2) ----------
   const termsModal = document.getElementById("terms-modal");
@@ -181,10 +221,11 @@ document.addEventListener("DOMContentLoaded", () => {
           const targetId = preference === "essential-cookies" ? "cookie-reject" : "permissions-decline";
           const p = getRuntimeProfile(targetId);
           window.highlightElement(targetId);
-          const confirmed = await requestSafeAction(p);
+          const confirmed = await applySafeAction(targetId, () => {
+            if (targetId === "cookie-reject") document.getElementById("cookie-reject").click();
+            if (targetId === "permissions-decline") document.getElementById("permissions-decline").click();
+          });
           if (!confirmed) return result({ changed: false, message: "The user kept the current simulated choice." });
-          if (targetId === "cookie-reject") document.getElementById("cookie-reject").click();
-          if (targetId === "permissions-decline") document.getElementById("permissions-decline").click();
           window.highlightElement(targetId);
           return result({ changed: true, selected: targetId, preference, policyReferences: p.clauses });
         }
