@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nimbus — Stream everything</title>
+<title>FinePrint on Nimbus — inspect before you accept</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -27,7 +27,27 @@
   </nav>
   <div class="nav__actions"><button class="nav__watchlist">My list</button><button class="nav__signin">Sign in</button></div>
 </header>
-<div class="agent-status" id="agent-status" aria-live="polite"><span class="agent-status__pulse" aria-hidden="true"></span><span id="agent-status-copy">Agent tools connecting</span></div>
+<aside class="fineprint-dock" id="fineprint-dock" aria-label="FinePrint consent tools">
+  <button class="fineprint-dock__toggle" id="fineprint-dock-toggle" aria-expanded="true" aria-controls="fineprint-dock-body">FinePrint</button>
+  <div class="fineprint-dock__body" id="fineprint-dock-body">
+    <div class="fineprint-dock__status" id="agent-status">
+      <span class="agent-status__pulse" aria-hidden="true"></span>
+      <span id="agent-status-copy">Agent tools connecting</span>
+    </div>
+    <p class="fineprint-dock__lede">This is a <strong>demo streaming signup</strong>. FinePrint is a standardized consent interface: structured, testable declarations about terms, privacy, money, and defaults — so you can understand them before you agree.</p>
+    <p class="fineprint-dock__hint">It does not make the publisher trustworthy. Your agent reads the declared contract; you confirm any change.</p>
+    <label class="fineprint-dock__prompt-label" for="judge-prompt">Suggested judge prompt</label>
+    <textarea id="judge-prompt" readonly>Before I accept anything, list the consent decisions on this page. Inspect costs, data sharing, defaults, alternatives, and the terms that govern them — especially the trial and arbitration clauses. Explain the risks in plain language, then apply safer defaults after I confirm.</textarea>
+    <div class="fineprint-dock__actions">
+      <button type="button" class="btn btn--secondary" id="copy-judge-prompt">Copy prompt</button>
+      <button type="button" class="btn btn--ghost" id="reset-demo">Reset demo</button>
+    </div>
+    <p class="fineprint-dock__log-label">Agent activity</p>
+    <ol class="fineprint-dock__log" id="fineprint-log" aria-live="polite">
+      <li class="fineprint-dock__empty">Waiting for an agent to inspect a choice…</li>
+    </ol>
+  </div>
+</aside>
 
 <section class="flow-screen" id="signin-screen" hidden aria-labelledby="signin-title">
   <div class="flow-card">
@@ -87,6 +107,7 @@
         Start your free trial
       </button>
       <p class="signup-card__fineprint">No commitment. Cancel whenever you like.</p>
+      <p class="nimbus-receipt" id="trial-receipt" hidden>Trial started in this demo. Billing would begin automatically in 14 days unless cancelled. No payment was taken.</p>
     </form>
   </section>
 
@@ -136,7 +157,11 @@
 
 <footer class="site-footer"><span class="nav__brand">Nimbus</span><span>Questions? Visit Help Center</span><span>© 2026 Nimbus Entertainment</span></footer>
 <aside class="membership-dock" id="membership-dock" hidden><span class="membership-dock__mark">N</span><span><strong>Standard plan</strong><small>4K · 4 screens · $12.99/mo</small></span><button>Manage plan</button></aside>
-<div class="agent-outcome" id="agent-outcome" hidden aria-live="polite"></div>
+<div class="agent-outcome" id="agent-outcome" hidden aria-live="polite">
+  <p id="agent-outcome-copy"></p>
+  <button type="button" class="agent-outcome__dismiss" id="agent-outcome-dismiss">Dismiss</button>
+</div>
+<div class="nimbus-receipt nimbus-receipt--toast" id="upgrade-receipt" hidden>Annual plan claimed in this demo — $59.88 would be billed now. No payment was taken.</div>
 
 <!-- ============ Trap #4: permissions modal (over-asks) ============ -->
 <div class="modal-overlay" id="permissions-modal" data-mcp-id="permissions-modal" hidden>
@@ -166,21 +191,59 @@
       <button class="icon-button" id="terms-close" aria-label="Close terms">×</button>
     </div>
     <p class="terms-modal__updated">Last updated: August 31, 2026 · Estimated reading time: 18 minutes</p>
-    <div class="legal-copy" tabindex="0">
-      <h4>1. Welcome to Nimbus</h4>
-      <p>These Terms govern your access to Nimbus streaming, our websites, applications, and related services. By creating an account, you agree to these Terms, our Privacy Policy, and any supplemental terms presented with a feature.</p>
-      <h4>2. Your account and trial</h4>
-      <p>Your trial begins when you submit a valid payment method. Unless you cancel before the end of the trial period, your membership will automatically continue at the then-current monthly rate. We may send reminders where required by law.</p>
-      <h4>3. Information we collect</h4>
-      <p>We collect account details, viewing activity, device and log information, billing information, and inferences about your interests. We use this information to operate, improve, secure, measure, and market Nimbus.</p>
-      <h4>4. How information is shared</h4>
-      <p>We may share information with service providers, affiliates, analytics providers, advertising partners, and other parties described in our Privacy Policy. Some sharing helps us measure campaign performance across devices and services.</p>
-      <h4>5. Communications</h4>
-      <p>By accepting these Terms, you also agree to receive account notices and promotional messages. You can adjust communication preferences in Account Settings, subject to processing times.</p>
-      <h4>6. Dispute resolution and arbitration</h4>
-      <p><strong>Except where prohibited by law, you and Nimbus agree that disputes will be resolved by binding individual arbitration, not in court.</strong> You waive the right to participate in a class, collective, or representative action. You may opt out by mailing a written notice within 30 days of first accepting these Terms.</p>
-      <h4>7. Changes to these terms</h4>
-      <p>We may update these Terms when we change our services or for legal, regulatory, or security reasons. Continued use after an update takes effect means you accept the updated Terms.</p>
+    <div class="legal-copy" id="legal-copy" tabindex="0">
+      <section id="clause-terms-welcome" data-clause-id="terms-welcome">
+        <h4>1. Welcome to Nimbus</h4>
+        <p>These Terms govern your access to Nimbus streaming, our websites, applications, and related services. By creating an account, you agree to these Terms, our Privacy Policy, and any supplemental terms presented with a feature.</p>
+      </section>
+      <section id="clause-terms-trial" data-clause-id="terms-trial">
+        <h4>2. Your account and trial</h4>
+        <p>Your trial begins when you submit a valid payment method. Unless you cancel before the end of the trial period, your membership will automatically continue at the then-current monthly rate. We may send reminders where required by law.</p>
+      </section>
+      <section id="clause-terms-collection" data-clause-id="terms-collection">
+        <h4>3. Information we collect</h4>
+        <p>We collect account details, viewing activity, device and log information, billing information, and inferences about your interests. We use this information to operate, improve, secure, measure, and market Nimbus.</p>
+      </section>
+      <section id="clause-terms-sharing" data-clause-id="terms-sharing">
+        <h4>4. How information is shared</h4>
+        <p>We may share information with service providers, affiliates, analytics providers, advertising partners, and other parties described in our Privacy Policy. Some sharing helps us measure campaign performance across devices and services.</p>
+      </section>
+      <section id="clause-terms-communications" data-clause-id="terms-communications">
+        <h4>5. Communications</h4>
+        <p>By accepting these Terms, you also agree to receive account notices and promotional messages. You can adjust communication preferences in Account Settings, subject to processing times.</p>
+      </section>
+      <section id="clause-terms-arbitration" data-clause-id="terms-arbitration">
+        <h4>6. Dispute resolution and arbitration</h4>
+        <p><strong>Except where prohibited by law, you and Nimbus agree that disputes will be resolved by binding individual arbitration, not in court.</strong> You waive the right to participate in a class, collective, or representative action. You may opt out by mailing a written notice within 30 days of first accepting these Terms.</p>
+      </section>
+      <section id="clause-terms-changes" data-clause-id="terms-changes">
+        <h4>7. Changes to these terms</h4>
+        <p>We may update these Terms when we change our services or for legal, regulatory, or security reasons. Continued use after an update takes effect means you accept the updated Terms.</p>
+      </section>
+      <section id="clause-cookie-advertising" data-clause-id="cookie-advertising">
+        <h4>Cookie notice: advertising-partner sharing</h4>
+        <p>If you accept all cookies, Nimbus sets tracking cookies and may share browsing activity and device identifiers with advertising partners, in addition to cookies required to run the site.</p>
+      </section>
+      <section id="clause-cookie-essential" data-clause-id="cookie-essential">
+        <h4>Cookie notice: essential cookies only</h4>
+        <p>Rejecting all cookies keeps only the cookies required for the site to function. Browsing activity is not shared with advertising partners.</p>
+      </section>
+      <section id="clause-cookie-partners" data-clause-id="cookie-partners">
+        <h4>Cookie notice: partner sharing</h4>
+        <p>The optional partner-sharing checkbox, when selected, allows Nimbus to share browsing activity, device identifiers, and advertising-partner identifiers.</p>
+      </section>
+      <section id="clause-recommendation-request" data-clause-id="recommendation-request">
+        <h4>Recommendation permission request</h4>
+        <p>Turning on personalized recommendations asks for precise location, access to contacts, and permission to send push notifications.</p>
+      </section>
+      <section id="clause-recommendation-decline" data-clause-id="recommendation-decline">
+        <h4>Recommendation permission request: decline</h4>
+        <p>Declining recommendations does not share location, contacts, or notification access. You can still browse Nimbus without those permissions.</p>
+      </section>
+      <section id="clause-founding-offer" data-clause-id="founding-offer">
+        <h4>Founding Member offer: annual billing</h4>
+        <p>The displayed founding price is $4.99 per month. Claiming the offer bills $59.88 immediately as an annual plan. The on-page countdown is a demo timer and is not a real deadline.</p>
+      </section>
     </div>
     <button class="btn btn--secondary btn--block" id="terms-close-bottom">Close</button>
   </article>
@@ -218,18 +281,18 @@
 <!-- The site's machine-readable policy declaration. WebMCP reads this at runtime. -->
 <script id="fineprint-policy" type="application/json">
 {
-  "version": "1.0",
+  "version": "1.1",
   "elements": {
-    "cookie-accept": { "label": "Accept all cookies", "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": ["browsing activity", "device identifiers", "shared with ~40 advertising partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: advertising-partner sharing"] },
-    "cookie-reject": { "label": "Reject all cookies", "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: essential cookies only"] },
-    "cookie-partners-row": { "label": "Share activity with advertising partners", "decision": "cookie-consent", "defaultSelected": true, "consequences": { "dataShared": ["browsing activity", "device identifiers", "advertising partner identifiers"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Cookie notice: partner sharing"] },
-    "terms-row": { "label": "Terms and partner-offers consent", "decision": "account-terms", "defaultSelected": true, "consequences": { "dataShared": ["email address shared with marketing partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["Terms §5: Communications"] },
-    "terms-link": { "label": "Terms of Service and Privacy Policy", "decision": "account-terms", "defaultSelected": false, "consequences": { "dataShared": ["usage data", "device data", "shared with affiliates"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["Terms §4: How information is shared", "Terms §6: Dispute resolution and arbitration"] },
-    "trial-btn": { "label": "Start your free trial", "decision": "trial-membership", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$49.99/month after the trial, charged automatically", "recurringCharge": "$49.99/month", "reversible": true, "timeLimit": "14-day trial — cancel before it ends to avoid the charge" }, "clauses": ["Terms §2: Your account and trial"] },
-    "personalize-btn": { "label": "Turn on personalized recommendations", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request"] },
-    "permissions-allow": { "label": "Allow all recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": ["precise location", "contacts list", "push notification access"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request"] },
-    "permissions-decline": { "label": "Decline recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["Recommendation permission request: decline"] },
-    "upgrade-cta": { "label": "Claim founding member price", "decision": "founding-member-offer", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$59.88 billed immediately (annual plan)", "recurringCharge": "$59.88/year", "reversible": true, "timeLimit": null }, "disclosures": { "displayedPrice": "$4.99/month", "billing": "annual plan billed upfront", "hasRealDeadline": false, "timerResetsOnReload": true }, "clauses": ["Founding Member offer: annual billing"] }
+    "cookie-accept": { "label": "Accept all cookies", "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": ["browsing activity", "device identifiers", "shared with ~40 advertising partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["cookie-advertising"] },
+    "cookie-reject": { "label": "Reject all cookies", "decision": "cookie-consent", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["cookie-essential"] },
+    "cookie-partners-row": { "label": "Share activity with advertising partners", "decision": "cookie-consent", "defaultSelected": true, "consequences": { "dataShared": ["browsing activity", "device identifiers", "advertising partner identifiers"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["cookie-partners"] },
+    "terms-row": { "label": "Terms and partner-offers consent", "decision": "account-terms", "defaultSelected": true, "consequences": { "dataShared": ["email address shared with marketing partners"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["terms-communications"] },
+    "terms-link": { "label": "Terms of Service and Privacy Policy", "decision": "account-terms", "defaultSelected": false, "consequences": { "dataShared": ["usage data", "device data", "shared with affiliates"], "moneyCommitted": null, "recurringCharge": null, "reversible": false, "timeLimit": null }, "clauses": ["terms-sharing", "terms-arbitration"] },
+    "trial-btn": { "label": "Start your free trial", "decision": "trial-membership", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$49.99/month after the trial, charged automatically", "recurringCharge": "$49.99/month", "reversible": true, "timeLimit": "14-day trial — cancel before it ends to avoid the charge" }, "clauses": ["terms-trial"] },
+    "personalize-btn": { "label": "Turn on personalized recommendations", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["recommendation-request"] },
+    "permissions-allow": { "label": "Allow all recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": ["precise location", "contacts list", "push notification access"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["recommendation-request"] },
+    "permissions-decline": { "label": "Decline recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["recommendation-decline"] },
+    "upgrade-cta": { "label": "Claim founding member price", "decision": "founding-member-offer", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$59.88 billed immediately (annual plan)", "recurringCharge": "$59.88/year", "reversible": true, "timeLimit": null }, "disclosures": { "displayedPrice": "$4.99/month", "billing": "annual plan billed upfront", "hasRealDeadline": false, "timerResetsOnReload": true }, "clauses": ["founding-offer"] }
   }
 }
 </script>

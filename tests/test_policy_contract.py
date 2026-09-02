@@ -15,6 +15,18 @@ POLICY_MATCH = re.search(
     INDEX,
     re.DOTALL,
 )
+REQUIRED_CLAUSES = {
+    "terms-trial",
+    "terms-sharing",
+    "terms-communications",
+    "terms-arbitration",
+    "cookie-advertising",
+    "cookie-essential",
+    "cookie-partners",
+    "recommendation-request",
+    "recommendation-decline",
+    "founding-offer",
+}
 
 
 class PolicyContractTests(unittest.TestCase):
@@ -76,16 +88,37 @@ class PolicyContractTests(unittest.TestCase):
         tool_names = set(re.findall(r'name: "([A-Za-z]+)"', SCRIPT))
         self.assertTrue(
             {
+                "listConsentDecisions",
                 "getChoiceDetails",
                 "getDecisionImpact",
                 "getAvailableChoices",
                 "getPolicyReferences",
+                "getPolicySection",
+                "showPolicySection",
                 "setPrivacyPreference",
                 "lockInTimerState",
                 "applySaferDefaults",
+                "resetDemo",
             }.issubset(tool_names)
         )
         self.assertNotIn("detectDarkPatterns", tool_names)
+
+    def test_legal_sections_have_stable_clause_ids(self):
+        declared_ids = set(re.findall(r'data-clause-id="([^"]+)"', INDEX))
+        self.assertTrue(REQUIRED_CLAUSES.issubset(declared_ids))
+        referenced = {
+            clause
+            for entry in self.policy["elements"].values()
+            for clause in entry["clauses"]
+        }
+        self.assertTrue(referenced.issubset(declared_ids))
+
+    def test_fineprint_dock_explains_the_demo(self):
+        self.assertIn('id="fineprint-dock"', INDEX)
+        self.assertIn("Suggested judge prompt", INDEX)
+        self.assertIn("Reset demo", INDEX)
+        self.assertIn("const resetDemo", SCRIPT)
+        self.assertIn("listConsentDecisions", SCRIPT)
 
     def test_trial_form_uses_declarative_webmcp_metadata(self):
         self.assertIn('toolname="startTrialReview"', INDEX)

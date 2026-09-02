@@ -2,7 +2,7 @@
  * FinePrint — page interactivity
  * -------------------------------------
  * UI behavior plus a progressive WebMCP layer. Tool output comes exclusively
- * from the page's machine-readable policy declaration.
+ * from the page's machine-readable policy declaration and on-page clause text.
  *
  * WebMCP tools use the current imperative browser API when it is available.
  * The page remains fully usable in browsers that do not expose WebMCP.
@@ -20,26 +20,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const result = (payload) => ({ content: [{ type: "text", text: JSON.stringify(payload, null, 2) }] });
 
+  const clauseNodes = [...document.querySelectorAll("[data-clause-id]")];
+  const clauseIds = clauseNodes.map((node) => node.dataset.clauseId);
+  const getClauseNode = (clauseId) => document.querySelector(`[data-clause-id="${clauseId}"]`);
+  const readClause = (clauseId) => {
+    const node = getClauseNode(clauseId);
+    if (!node) throw new Error(`Unknown FinePrint clause: ${clauseId}`);
+    const heading = node.querySelector("h4")?.textContent?.trim() || clauseId;
+    const text = [...node.querySelectorAll("p")].map((paragraph) => paragraph.textContent.trim()).join("\n");
+    return { clauseId, label: heading, text };
+  };
+
+  const logList = document.getElementById("fineprint-log");
+  const logAgentActivity = (message) => {
+    const empty = logList.querySelector(".fineprint-dock__empty");
+    if (empty) empty.remove();
+    const item = document.createElement("li");
+    const stamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    item.textContent = `${stamp} · ${message}`;
+    logList.prepend(item);
+    while (logList.children.length > 8) logList.removeChild(logList.lastChild);
+  };
+  const clearAgentLog = () => {
+    logList.innerHTML = '<li class="fineprint-dock__empty">Waiting for an agent to inspect a choice…</li>';
+  };
+
+  const dock = document.getElementById("fineprint-dock");
+  const dockToggle = document.getElementById("fineprint-dock-toggle");
+  dockToggle.addEventListener("click", () => {
+    const collapsed = dock.classList.toggle("is-collapsed");
+    dockToggle.setAttribute("aria-expanded", String(!collapsed));
+  });
+
+  const copyPrompt = document.getElementById("copy-judge-prompt");
+  const judgePrompt = document.getElementById("judge-prompt");
+  copyPrompt.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(judgePrompt.value);
+      copyPrompt.textContent = "Copied";
+      setTimeout(() => { copyPrompt.textContent = "Copy prompt"; }, 1600);
+    } catch {
+      judgePrompt.select();
+      copyPrompt.textContent = "Select and copy";
+    }
+  });
+
   // ---------- Countdown (Trap #5 — resets on every load, on purpose) ----------
+  const INITIAL_SECONDS = 14 * 60 + 59;
   let countdownTimer;
+  let countdownSeconds = INITIAL_SECONDS;
   let timerLocked = false;
-  (function countdown() {
-    let seconds = 14 * 60 + 59;
-    const el = document.getElementById("countdown");
+  const countdownEl = document.getElementById("countdown");
+  const renderCountdown = () => {
+    const m = Math.floor(countdownSeconds / 60).toString().padStart(2, "0");
+    const s = (countdownSeconds % 60).toString().padStart(2, "0");
+    countdownEl.textContent = `${m}:${s}`;
+  };
+  const startCountdown = () => {
+    clearInterval(countdownTimer);
+    countdownSeconds = INITIAL_SECONDS;
+    timerLocked = false;
+    renderCountdown();
     countdownTimer = setInterval(() => {
-      if (seconds <= 0) return;
-      seconds -= 1;
-      const m = Math.floor(seconds / 60).toString().padStart(2, "0");
-      const s = (seconds % 60).toString().padStart(2, "0");
-      el.textContent = `${m}:${s}`;
+      if (timerLocked || countdownSeconds <= 0) return;
+      countdownSeconds -= 1;
+      renderCountdown();
     }, 1000);
-  })();
+  };
+  startCountdown();
 
   // ---------- Cookie banner ----------
   const cookieBanner = document.getElementById("cookie-banner");
+  const cookiePartners = document.getElementById("cookie-partners");
   ["cookie-accept", "cookie-reject", "cookie-manage"].forEach((id) => {
     document.getElementById(id).addEventListener("click", () => {
-      cookieBanner.style.display = "none";
+      cookieBanner.hidden = true;
     });
   });
 
@@ -117,23 +172,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- Terms link (Trap #2) ----------
   const termsModal = document.getElementById("terms-modal");
+  const legalCopy = document.getElementById("legal-copy");
+  const openTerms = () => { termsModal.hidden = false; };
   document.getElementById("terms-link").addEventListener("click", (e) => {
     e.preventDefault();
-    termsModal.hidden = false;
+    openTerms();
   });
   ["terms-close", "terms-close-bottom"].forEach((id) => document.getElementById(id).addEventListener("click", () => { termsModal.hidden = true; }));
   termsModal.addEventListener("click", (e) => { if (e.target === termsModal) termsModal.hidden = true; });
 
-  // ---------- Declarative WebMCP trial form ----------
+  const trialReceipt = document.getElementById("trial-receipt");
+  const upgradeReceipt = document.getElementById("upgrade-receipt");
   document.getElementById("trial-form").addEventListener("submit", (e) => {
     e.preventDefault();
-    alert("Trial started — billing begins automatically in 14 days unless cancelled.");
+    trialReceipt.hidden = false;
   });
-
-  // ---------- Upgrade CTA (Trap #5) ----------
   document.getElementById("upgrade-cta").addEventListener("click", (e) => {
     e.preventDefault();
-    alert("Annual plan claimed — $59.88 billed now.");
+    upgradeReceipt.hidden = false;
   });
 
   // ---------- Utility: visual highlight hook for WebMCP tool calls ----------
@@ -144,16 +200,20 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => el.classList.remove("mcp-highlight"), 2000);
   };
 
+  const outcome = document.getElementById("agent-outcome");
+  const outcomeCopy = document.getElementById("agent-outcome-copy");
   const showAgentOutcome = (message) => {
-    const outcome = document.getElementById("agent-outcome");
-    outcome.textContent = `Agent update: ${message}`;
+    outcomeCopy.textContent = `Agent update: ${message}`;
     outcome.hidden = false;
-    setTimeout(() => { outcome.hidden = true; }, 4500);
   };
+  document.getElementById("agent-outcome-dismiss").addEventListener("click", () => {
+    outcome.hidden = true;
+  });
+
   const applyEssentialCookies = () => {
-    const checkbox = document.getElementById("cookie-partners");
-    checkbox.checked = false;
-    checkbox.disabled = true;
+    cookiePartners.checked = false;
+    cookiePartners.disabled = true;
+    cookieBanner.hidden = false;
     cookieBanner.classList.add("agent-resolved");
     document.getElementById("cookie-agent-state").hidden = false;
     window.highlightElement("cookie-partners-row");
@@ -163,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timerLocked = true;
     clearInterval(countdownTimer);
     document.getElementById("upgrade-banner").classList.add("is-locked");
-    document.getElementById("countdown").textContent = "NO DEADLINE";
+    countdownEl.textContent = "NO DEADLINE";
     document.getElementById("upgrade-cta").textContent = "Price held";
     window.highlightElement("upgrade-cta");
   };
@@ -179,11 +239,77 @@ document.addEventListener("DOMContentLoaded", () => {
     ["terms-row", "trial-btn", "personalize-btn"].forEach(window.highlightElement);
   };
 
+  const showPolicySection = (clauseId) => {
+    const clause = readClause(clauseId);
+    const node = getClauseNode(clauseId);
+    openTerms();
+    clauseNodes.forEach((section) => section.classList.remove("clause-highlight"));
+    node.classList.add("clause-highlight");
+    node.scrollIntoView({ block: "center", behavior: "smooth" });
+    window.highlightElement(clauseId === "cookie-partners" || clauseId === "cookie-advertising" || clauseId === "cookie-essential"
+      ? (clauseId === "cookie-essential" ? "cookie-reject" : clauseId === "cookie-advertising" ? "cookie-accept" : "cookie-partners-row")
+      : clauseId === "terms-trial" ? "trial-btn"
+      : clauseId === "terms-communications" ? "terms-row"
+      : clauseId === "founding-offer" ? "upgrade-cta"
+      : clauseId.startsWith("recommendation") ? "personalize-btn"
+      : "terms-link");
+    return clause;
+  };
+
+  const resetDemo = () => {
+    cookiePartners.checked = true;
+    cookiePartners.disabled = false;
+    cookieBanner.hidden = false;
+    cookieBanner.classList.remove("agent-resolved");
+    document.getElementById("cookie-agent-state").hidden = true;
+    document.querySelector("#terms-row input").checked = true;
+    document.getElementById("terms-row").classList.remove("agent-resolved");
+    document.querySelector(".signup-card").classList.remove("agent-resolved");
+    document.getElementById("trial-btn").textContent = "Start your free trial";
+    document.querySelector(".personalize-strip").classList.remove("agent-resolved");
+    document.getElementById("personalize-btn").textContent = "Turn on";
+    document.getElementById("upgrade-banner").classList.remove("is-locked");
+    document.getElementById("upgrade-cta").textContent = "Claim price";
+    trialReceipt.hidden = true;
+    upgradeReceipt.hidden = true;
+    outcome.hidden = true;
+    modal.hidden = true;
+    termsModal.hidden = true;
+    safeActionModal.hidden = true;
+    clauseNodes.forEach((section) => section.classList.remove("clause-highlight"));
+    document.body.classList.remove("is-signed-in");
+    document.getElementById("membership-dock").hidden = true;
+    document.querySelector(".nav__signin").textContent = "Sign in";
+    closeFlow();
+    startCountdown();
+    clearAgentLog();
+  };
+  document.getElementById("reset-demo").addEventListener("click", () => {
+    resetDemo();
+    logAgentActivity("Demo reset. Cookie banner, terms, trial, timer, and receipts restored.");
+  });
+
+  const policyReferencesFor = (elementId) => getRuntimeProfile(elementId).clauses.map((clauseId) => readClause(clauseId));
+  const listConsentDecisions = () => {
+    const groups = {};
+    Object.entries(pagePolicy.elements).forEach(([choiceId, details]) => {
+      groups[details.decision] ||= [];
+      groups[details.decision].push({
+        choiceId,
+        label: details.label,
+        defaultSelected: details.defaultSelected
+      });
+    });
+    return Object.entries(groups).map(([decision, choices]) => ({ decision, choices }));
+  };
+
   // ---------- WebMCP: discoverable, data-driven consent tools ----------
-  // Register immediately after page setup so agents can discover the complete tool set.
   async function registerWebMCPTools() {
+    const statusCopy = document.getElementById("agent-status-copy");
+    const status = document.getElementById("agent-status");
     if (!document.modelContext?.registerTool) {
-      document.getElementById("agent-status-copy").textContent = "Agent tools unavailable in this browser";
+      statusCopy.textContent = "Agent tools unavailable in this browser";
+      status.classList.add("is-unavailable");
       console.info("FinePrint: WebMCP is unavailable in this browser.");
       return;
     }
@@ -192,6 +318,11 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "string",
       enum: Object.keys(pagePolicy.elements),
       description: "The data-mcp-id of a choice declared in this page's policy."
+    };
+    const clauseIdSchema = {
+      type: "string",
+      enum: clauseIds,
+      description: "Stable clause id from this page's terms, cookie notice, or permission request."
     };
     const inspect = (elementId) => {
       window.highlightElement(elementId);
@@ -206,12 +337,29 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const tools = [
       {
+        name: "listConsentDecisions",
+        title: "List consent decisions",
+        description: "List every consent, privacy, subscription, and offer decision on this page, with choice ids, labels, and whether each choice is selected by default. Start here before inspecting a specific control.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+        annotations: { readOnlyHint: true },
+        execute: () => {
+          const decisions = listConsentDecisions();
+          logAgentActivity("Listed all consent decisions on the page.");
+          return result({ decisions, source: "page-declared policy" });
+        }
+      },
+      {
         name: "getChoiceDetails",
         title: "Get choice details",
         description: "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, label: p.label, decision: p.decision, defaultSelected: p.defaultSelected, policyReferences: p.clauses }); }
+        execute: ({ elementId }) => {
+          const p = inspect(elementId);
+          const policyReferences = policyReferencesFor(elementId);
+          logAgentActivity(`Inspected ${p.label} (${elementId}).`);
+          return result({ elementId, label: p.label, decision: p.decision, defaultSelected: p.defaultSelected, policyReferences });
+        }
       },
       {
         name: "getDecisionImpact",
@@ -219,7 +367,11 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, consequences: p.consequences, disclosures: p.disclosures || {}, policyReferences: p.clauses, source: "page-declared policy" }); }
+        execute: ({ elementId }) => {
+          const p = inspect(elementId);
+          logAgentActivity(`Read impact for ${p.label}.`);
+          return result({ elementId, consequences: p.consequences, disclosures: p.disclosures || {}, policyReferences: policyReferencesFor(elementId), source: "page-declared policy" });
+        }
       },
       {
         name: "getAvailableChoices",
@@ -227,15 +379,47 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => result({ elementId, choices: availableChoices(elementId), source: "page-declared policy" })
+        execute: ({ elementId }) => {
+          const choices = availableChoices(elementId);
+          logAgentActivity(`Listed alternatives for ${elementId}.`);
+          return result({ elementId, choices, source: "page-declared policy" });
+        }
       },
       {
         name: "getPolicyReferences",
         title: "Get policy references",
-        description: "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
+        description: "Return the page policy sections that govern a choice, including clause ids an agent can open with showPolicySection.",
         inputSchema: { type: "object", properties: { elementId: elementIdSchema }, required: ["elementId"] },
         annotations: { readOnlyHint: true },
-        execute: ({ elementId }) => { const p = inspect(elementId); return result({ elementId, policyReferences: p.clauses }); }
+        execute: ({ elementId }) => {
+          const p = inspect(elementId);
+          logAgentActivity(`Looked up policy references for ${p.label}.`);
+          return result({ elementId, policyReferences: policyReferencesFor(elementId) });
+        }
+      },
+      {
+        name: "getPolicySection",
+        title: "Get policy section",
+        description: "Return the full on-page text of a terms, privacy, cookie, or permission section. The agent should explain this text; the page does not interpret it.",
+        inputSchema: { type: "object", properties: { clauseId: clauseIdSchema }, required: ["clauseId"] },
+        annotations: { readOnlyHint: true },
+        execute: ({ clauseId }) => {
+          const clause = readClause(clauseId);
+          logAgentActivity(`Read clause ${clause.label}.`);
+          return result({ ...clause, source: "on-page legal text" });
+        }
+      },
+      {
+        name: "showPolicySection",
+        title: "Show policy section",
+        description: "Open the terms and privacy document, scroll to a clause, and highlight it so the human can read the same text the agent inspected.",
+        inputSchema: { type: "object", properties: { clauseId: clauseIdSchema }, required: ["clauseId"] },
+        annotations: { readOnlyHint: true },
+        execute: ({ clauseId }) => {
+          const clause = showPolicySection(clauseId);
+          logAgentActivity(`Opened ${clause.label} on the page.`);
+          return result({ shown: true, ...clause });
+        }
       },
       {
         name: "setPrivacyPreference",
@@ -251,10 +435,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (targetId === "cookie-reject") applyEssentialCookies();
             if (targetId === "permissions-decline") document.getElementById("permissions-decline").click();
           });
-          if (!confirmed) return result({ changed: false, message: "The user kept the current simulated choice." });
+          if (!confirmed) {
+            logAgentActivity("User kept the current privacy choice.");
+            return result({ changed: false, message: "The user kept the current simulated choice." });
+          }
           window.highlightElement(targetId);
-          showAgentOutcome(preference === "essential-cookies" ? "essential cookies selected; partner sharing is off." : "location, contacts, and notifications were declined.");
-          return result({ changed: true, selected: targetId, preference, policyReferences: p.clauses });
+          const message = preference === "essential-cookies" ? "essential cookies selected; partner sharing is off." : "location, contacts, and notifications were declined.";
+          showAgentOutcome(message);
+          logAgentActivity(`Applied ${preference} after confirmation.`);
+          return result({ changed: true, selected: targetId, preference, policyReferences: policyReferencesFor(targetId) });
         }
       },
       {
@@ -265,9 +454,13 @@ document.addEventListener("DOMContentLoaded", () => {
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
         execute: async () => {
           const confirmed = await requestSafeAction({ label: "Lock in the offer timer state" });
-          if (!confirmed) return result({ changed: false, message: "The user kept the running demo timer." });
+          if (!confirmed) {
+            logAgentActivity("User kept the running demo timer.");
+            return result({ changed: false, message: "The user kept the running demo timer." });
+          }
           lockTimerState();
           showAgentOutcome("the offer timer is frozen; no deadline applies.");
+          logAgentActivity("Timer frozen. No real deadline applies.");
           return result({ changed: true, timerLocked: true, offerHasRealDeadline: false });
         }
       },
@@ -279,18 +472,38 @@ document.addEventListener("DOMContentLoaded", () => {
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
         execute: async () => {
           const confirmed = await requestSafeAction({ label: "Apply safer defaults across this demo" });
-          if (!confirmed) return result({ changed: false, message: "The user kept the current demo defaults." });
+          if (!confirmed) {
+            logAgentActivity("User kept the current demo defaults.");
+            return result({ changed: false, message: "The user kept the current demo defaults." });
+          }
           applySaferDefaults();
           showAgentOutcome("five safer defaults are now visible on the page.");
+          logAgentActivity("Applied safer defaults after confirmation.");
           return result({ changed: true, changes: ["partner sharing off", "marketing consent unchecked", "trial renewal surfaced", "unnecessary permissions avoided", "timer frozen"] });
+        }
+      },
+      {
+        name: "resetDemo",
+        title: "Reset demo",
+        description: "Restore cookie, terms, trial, permission, timer, and receipt state so a judge can re-run the FinePrint demonstration.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
+        execute: () => {
+          resetDemo();
+          logAgentActivity("Demo reset from WebMCP.");
+          return result({ reset: true });
         }
       }
     ];
     await Promise.all(tools.map((tool) => document.modelContext.registerTool(tool)));
-    document.getElementById("agent-status").classList.add("is-ready");
-    document.getElementById("agent-status-copy").textContent = "Agent tools ready";
+    status.classList.add("is-ready");
+    statusCopy.textContent = "Agent tools ready";
     console.info(`FinePrint: registered ${tools.length} WebMCP tools.`);
   }
 
-  registerWebMCPTools().catch((error) => console.warn("FinePrint: WebMCP registration failed.", error));
+  registerWebMCPTools().catch((error) => {
+    document.getElementById("agent-status-copy").textContent = "Agent tools unavailable in this browser";
+    document.getElementById("agent-status").classList.add("is-unavailable");
+    console.warn("FinePrint: WebMCP registration failed.", error);
+  });
 });
