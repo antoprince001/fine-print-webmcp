@@ -42,7 +42,7 @@ The FinePrint dock on the page states the consent-interface framing, copies a ju
 
 Read-only tools have `readOnlyHint: true` and highlight related UI. State-changing tools (except `resetDemo`) open an in-page confirmation sheet. After a confirmed action, the page keeps the safer state visible and logs the call in the FinePrint dock.
 
-## Devpost architecture
+## Product architecture
 
 ```mermaid
 flowchart LR
@@ -56,7 +56,39 @@ flowchart LR
     H --> I[Page stays transparent and in control]
 ```
 
-This is the simplest Devpost-friendly view: the site presents consent decisions, the agent reads and explains them, and the user remains in the loop before anything changes.
+This is the broader product view: the app turns consent into a readable, inspectable flow rather than a hidden or confusing UI trap.
+
+## WebMCP architecture
+
+```mermaid
+flowchart LR
+    A[Page UI + consent elements] --> B[Tool registry via document.modelContext]
+    B --> C[listConsentDecisions]
+    B --> D[getChoiceDetails]
+    B --> E[getDecisionImpact]
+    B --> F[getPolicyReferences]
+    B --> G[getPolicySection]
+    B --> H[showPolicySection]
+    B --> I[applySaferDefaults]
+    B --> J[setPrivacyPreference]
+
+    C --> K[Agent reads declared consent choices]
+    D --> K
+    E --> K
+    F --> K
+    G --> L[Agent opens legal clause text]
+    H --> L
+
+    K --> M[Human reviews consequences]
+    L --> M
+    M --> N[User confirms on-page]
+    N --> I
+    N --> J
+    I --> O[Safer state applied to the page]
+    J --> O
+```
+
+This is the WebMCP-specific flow: the page exposes its choice metadata and legal clause text through tools, the agent inspects and explains them, and the user must confirm before any state-changing choice is applied.
 
 ## Run locally
 

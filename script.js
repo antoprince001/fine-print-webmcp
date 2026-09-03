@@ -65,30 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ---------- Countdown (Trap #5 — resets on every load, on purpose) ----------
-  const INITIAL_SECONDS = 14 * 60 + 59;
-  let countdownTimer;
-  let countdownSeconds = INITIAL_SECONDS;
-  let timerLocked = false;
-  const countdownEl = document.getElementById("countdown");
-  const renderCountdown = () => {
-    const m = Math.floor(countdownSeconds / 60).toString().padStart(2, "0");
-    const s = (countdownSeconds % 60).toString().padStart(2, "0");
-    countdownEl.textContent = `${m}:${s}`;
-  };
-  const startCountdown = () => {
-    clearInterval(countdownTimer);
-    countdownSeconds = INITIAL_SECONDS;
-    timerLocked = false;
-    renderCountdown();
-    countdownTimer = setInterval(() => {
-      if (timerLocked || countdownSeconds <= 0) return;
-      countdownSeconds -= 1;
-      renderCountdown();
-    }, 1000);
-  };
-  startCountdown();
-
   // ---------- Cookie banner ----------
   const cookieBanner = document.getElementById("cookie-banner");
   const cookiePartners = document.getElementById("cookie-partners");
@@ -218,21 +194,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("cookie-agent-state").hidden = false;
     window.highlightElement("cookie-partners-row");
   };
-  const lockTimerState = () => {
-    if (timerLocked) return;
-    timerLocked = true;
-    clearInterval(countdownTimer);
-    document.getElementById("upgrade-banner").classList.add("is-locked");
-    countdownEl.textContent = "NO DEADLINE";
-    document.getElementById("upgrade-cta").textContent = "Price held";
-    window.highlightElement("upgrade-cta");
-  };
   const DECISION_LABELS = {
     "cookie-consent": "essential cookies only",
     "account-terms": "uncheck bundled marketing consent",
     "trial-membership": "surface the $49.99/month renewal",
-    "recommendation-permissions": "decline extra recommendation permissions",
-    "founding-member-offer": "freeze the offer timer"
+    "recommendation-permissions": "decline extra recommendation permissions"
   };
   const applySaferDefaultFor = (decision) => {
     if (decision === "cookie-consent") {
@@ -257,10 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("personalize-btn").textContent = "Watch-history recommendations on";
       window.highlightElement("personalize-btn");
       return { changes: ["unnecessary permissions avoided"], message: "location, contacts, and notifications were declined." };
-    }
-    if (decision === "founding-member-offer") {
-      lockTimerState();
-      return { changes: ["timer frozen"], message: "the offer timer is frozen; no deadline applies." };
     }
     throw new Error(`Unknown FinePrint decision: ${decision}`);
   };
@@ -294,7 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("trial-btn").textContent = "Start your free trial";
     document.querySelector(".personalize-strip").classList.remove("agent-resolved");
     document.getElementById("personalize-btn").textContent = "Turn on";
-    document.getElementById("upgrade-banner").classList.remove("is-locked");
     document.getElementById("upgrade-cta").textContent = "Claim price";
     trialReceipt.hidden = true;
     upgradeReceipt.hidden = true;
@@ -307,7 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("membership-dock").hidden = true;
     document.querySelector(".nav__signin").textContent = "Sign in";
     closeFlow();
-    startCountdown();
     clearAgentLog();
   };
   document.getElementById("reset-demo").addEventListener("click", () => {
@@ -473,33 +433,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       },
       {
-        name: "lockInTimerState",
-        title: "Lock in the timer state",
-        description: "Freeze the demo offer timer after visible confirmation, making the no-deadline offer state explicit. This does not buy or reserve a plan.",
-        inputSchema: { type: "object", properties: {}, additionalProperties: false },
-        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
-        execute: async () => {
-          const confirmed = await requestSafeAction({ label: "Lock in the offer timer state" });
-          if (!confirmed) {
-            logAgentActivity("User kept the running demo timer.");
-            return result({ changed: false, message: "The user kept the running demo timer." });
-          }
-          lockTimerState();
-          showAgentOutcome("the offer timer is frozen; no deadline applies.");
-          logAgentActivity("Timer frozen. No real deadline applies.");
-          return result({ changed: true, timerLocked: true, offerHasRealDeadline: false });
-        }
-      },
-      {
         name: "applySaferDefaults",
         title: "Apply safer defaults",
-        description: "Apply the safer declared option for ONE decision after visible confirmation. Pass decision as cookie-consent, account-terms, trial-membership, recommendation-permissions, or founding-member-offer. Demo one trap at a time. This never starts a trial, buys a plan, or transmits data.",
+        description: "Apply the safer declared option for ONE decision after visible confirmation. Pass decision as cookie-consent, account-terms, trial-membership, or recommendation-permissions. Demo one trap at a time. This never starts a trial, buys a plan, or transmits data.",
         inputSchema: {
           type: "object",
           properties: {
             decision: {
               type: "string",
-              enum: ["cookie-consent", "account-terms", "trial-membership", "recommendation-permissions", "founding-member-offer"],
+              enum: ["cookie-consent", "account-terms", "trial-membership", "recommendation-permissions"],
               description: "The single consent decision to update. Required for the one-by-one demo."
             }
           },

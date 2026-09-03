@@ -11,9 +11,9 @@
 </head>
 <body>
 
-<!-- ============ TOP URGENCY BANNER (Trap #5: false urgency) ============ -->
+<!-- ============ FOUNDING MEMBER OFFER ============ -->
 <div class="urgency-bar" id="upgrade-banner" data-mcp-id="upgrade-banner">
-  <p>Founding Member pricing ends in <span id="countdown">14:59</span> — lock in $4.99/mo before it's gone</p>
+  <p>Founding Member pricing — lock in $4.99/mo on an annual plan</p>
   <button class="urgency-bar__cta" id="upgrade-cta" data-mcp-id="upgrade-cta">Claim price</button>
 </div>
 
@@ -35,13 +35,12 @@
       <span id="agent-status-copy">Agent tools connecting</span>
     </div>
     <p class="fineprint-dock__lede">FinePrint sits between you and <strong>“I Agree.”</strong> It is an agent-ready consent interface: a structured, testable contract for terms, privacy, payments, and permissions.</p>
-    <p class="fineprint-dock__hint">Not a trust score. Walk the five choices one at a time. Inspect, explain, then wait for me to confirm before the next.</p>
+    <p class="fineprint-dock__hint">Not a trust score. Walk the four main choices one at a time. Inspect, explain, then wait for me to confirm before the next.</p>
     <ol class="fineprint-dock__steps">
       <li>Cookies — partner sharing already on</li>
       <li>Terms — bundled offers + arbitration</li>
       <li>Trial — $49.99/month auto-renew</li>
       <li>Recommendations — location and contacts</li>
-      <li>Countdown — annual bill, no real deadline</li>
     </ol>
     <label class="fineprint-dock__prompt-label" for="judge-prompt">Suggested judge prompt</label>
     <textarea id="judge-prompt" readonly>Walk this page one consent decision at a time. Do not apply everything at once.
@@ -52,8 +51,7 @@ Order:
 1. cookie-consent (cookie-partners-row)
 2. account-terms (terms-row, then terms-arbitration)
 3. trial-membership (trial-btn, then terms-trial)
-4. recommendation-permissions (permissions-allow)
-5. founding-member-offer (upgrade-cta)</textarea>
+4. recommendation-permissions (permissions-allow)</textarea>
     <div class="fineprint-dock__actions">
       <button type="button" class="btn btn--secondary" id="copy-judge-prompt">Copy prompt</button>
       <button type="button" class="btn btn--ghost" id="reset-demo">Reset demo</button>
@@ -258,7 +256,7 @@ Order:
       </section>
       <section id="clause-founding-offer" data-clause-id="founding-offer">
         <h4>Founding Member offer: annual billing</h4>
-        <p>The displayed founding price is $4.99 per month. Claiming the offer bills $59.88 immediately as an annual plan. The on-page countdown is a demo timer and is not a real deadline.</p>
+        <p>The displayed founding price is $4.99 per month when billed annually. Claiming the offer results in an annual charge of $59.88, billed upfront.</p>
       </section>
     </div>
     <button class="btn btn--secondary btn--block" id="terms-close-bottom">Close</button>
@@ -308,7 +306,7 @@ Order:
     "personalize-btn": { "label": "Turn on personalized recommendations", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["recommendation-request"] },
     "permissions-allow": { "label": "Allow all recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": ["precise location", "contacts list", "push notification access"], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["recommendation-request"] },
     "permissions-decline": { "label": "Decline recommendation permissions", "decision": "recommendation-permissions", "defaultSelected": false, "consequences": { "dataShared": [], "moneyCommitted": null, "recurringCharge": null, "reversible": true, "timeLimit": null }, "clauses": ["recommendation-decline"] },
-    "upgrade-cta": { "label": "Claim founding member price", "decision": "founding-member-offer", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$59.88 billed immediately (annual plan)", "recurringCharge": "$59.88/year", "reversible": true, "timeLimit": null }, "disclosures": { "displayedPrice": "$4.99/month", "billing": "annual plan billed upfront", "hasRealDeadline": false, "timerResetsOnReload": true }, "clauses": ["founding-offer"] }
+    "upgrade-cta": { "label": "Claim founding member price", "decision": "founding-member-offer", "defaultSelected": false, "consequences": { "dataShared": ["payment card details"], "moneyCommitted": "$59.88 billed immediately (annual plan)", "recurringCharge": "$59.88/year", "reversible": true, "timeLimit": null }, "disclosures": { "displayedPrice": "$4.99/month", "billing": "annual plan billed upfront" }, "clauses": ["founding-offer"] }
   }
 }
 </script>
