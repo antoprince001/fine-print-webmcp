@@ -166,6 +166,14 @@ input:focus-visible {
 .fineprint-dock__status.is-ready .agent-status__pulse { background: #62c985; box-shadow: 0 0 0 4px rgba(98, 201, 133, 0.14); }
 .fineprint-dock__lede, .fineprint-dock__hint { color: var(--muted); font-size: 0.78rem; line-height: 1.45; margin: 0 0 0.55rem; }
 .fineprint-dock__lede strong { color: var(--text); }
+.fineprint-dock__steps {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  margin: 0 0 0.65rem;
+  padding-left: 1.15rem;
+}
+.fineprint-dock__steps li { margin: 0 0 0.2rem; }
 .fineprint-dock__prompt-label, .fineprint-dock__log-label {
   color: var(--accent);
   display: block;
@@ -177,7 +185,7 @@ input:focus-visible {
 }
 #judge-prompt {
   width: 100%;
-  min-height: 5.6rem;
+  min-height: 8.4rem;
   resize: none;
   background: var(--bg);
   border: 1px solid var(--border);

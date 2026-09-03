@@ -34,10 +34,26 @@
       <span class="agent-status__pulse" aria-hidden="true"></span>
       <span id="agent-status-copy">Agent tools connecting</span>
     </div>
-    <p class="fineprint-dock__lede">This is a <strong>demo streaming signup</strong>. FinePrint is a standardized consent interface: structured, testable declarations about terms, privacy, money, and defaults — so you can understand them before you agree.</p>
-    <p class="fineprint-dock__hint">It does not make the publisher trustworthy. Your agent reads the declared contract; you confirm any change.</p>
+    <p class="fineprint-dock__lede">FinePrint sits between you and <strong>“I Agree.”</strong> It is an agent-ready consent interface: a structured, testable contract for terms, privacy, payments, and permissions.</p>
+    <p class="fineprint-dock__hint">Not a trust score. Walk the five choices one at a time. Inspect, explain, then wait for me to confirm before the next.</p>
+    <ol class="fineprint-dock__steps">
+      <li>Cookies — partner sharing already on</li>
+      <li>Terms — bundled offers + arbitration</li>
+      <li>Trial — $49.99/month auto-renew</li>
+      <li>Recommendations — location and contacts</li>
+      <li>Countdown — annual bill, no real deadline</li>
+    </ol>
     <label class="fineprint-dock__prompt-label" for="judge-prompt">Suggested judge prompt</label>
-    <textarea id="judge-prompt" readonly>Before I accept anything, list the consent decisions on this page. Inspect costs, data sharing, defaults, alternatives, and the terms that govern them — especially the trial and arbitration clauses. Explain the risks in plain language, then apply safer defaults after I confirm.</textarea>
+    <textarea id="judge-prompt" readonly>Walk this page one consent decision at a time. Do not apply everything at once.
+
+For each decision: inspect impact and alternatives, open the governing clause, explain it in one or two sentences, then call applySaferDefaults with that decision only after I confirm. Then stop and wait for me before the next one.
+
+Order:
+1. cookie-consent (cookie-partners-row)
+2. account-terms (terms-row, then terms-arbitration)
+3. trial-membership (trial-btn, then terms-trial)
+4. recommendation-permissions (permissions-allow)
+5. founding-member-offer (upgrade-cta)</textarea>
     <div class="fineprint-dock__actions">
       <button type="button" class="btn btn--secondary" id="copy-judge-prompt">Copy prompt</button>
       <button type="button" class="btn btn--ghost" id="reset-demo">Reset demo</button>

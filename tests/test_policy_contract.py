@@ -118,7 +118,8 @@ class PolicyContractTests(unittest.TestCase):
         self.assertIn("Suggested judge prompt", INDEX)
         self.assertIn("Reset demo", INDEX)
         self.assertIn("const resetDemo", SCRIPT)
-        self.assertIn("listConsentDecisions", SCRIPT)
+        self.assertIn("Walk this page one consent decision at a time", INDEX)
+        self.assertIn('required: ["decision"]', SCRIPT)
 
     def test_trial_form_uses_declarative_webmcp_metadata(self):
         self.assertIn('toolname="startTrialReview"', INDEX)

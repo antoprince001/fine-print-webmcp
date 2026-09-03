@@ -1,0 +1,2186 @@
+[
+ {
+  "userPrompt": {
+   "message": "Can i sign up for free trial",
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Monday, August 31, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_compareChoices",
+        "description": "Compare the selected FinePrint choice against the lower-risk option on the page, including data sharing, costs, and reversibility.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_detectDarkPatterns",
+        "description": "Identify dark-pattern techniques associated with a FinePrint choice, including pre-checked consent, hidden opt-outs, false urgency, visual asymmetry, and buried clauses.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_explainAction",
+        "description": "Explain what a FinePrint choice actually does in plain language. Use before a user accepts cookies, terms, a trial, permissions, or an upgrade.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getAccessibleSummary",
+        "description": "Explain a FinePrint choice in standard, elderly-friendly, or low-vision-friendly wording. The facts remain the same; only the phrasing changes.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          },
+          "mode": {
+           "type": "string",
+           "enum": [
+            "standard",
+            "elderly",
+            "lowVision"
+           ],
+           "description": "Accessibility phrasing to use."
+          }
+         },
+         "required": [
+          "elementId",
+          "mode"
+         ]
+        }
+       },
+       {
+        "name": "_0_getConsequences",
+        "description": "Return the structured privacy, money, recurring-charge, reversibility, and timing consequences of one FinePrint choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_performSafeAction",
+        "description": "Perform the lower-risk FinePrint action in the page UI, such as rejecting cookies, declining permissions, or turning off partner sharing. This changes page state but never makes a purchase or shares data.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "1228",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 18:22:58 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=7415",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "functionCall": {
+         "name": "_0_explainAction",
+         "args": {
+          "elementId": "trial-btn"
+         },
+         "id": "call_398532"
+        },
+        "thoughtSignature": "EtAFCs0FARFNMg/+a0dCiv83mly9CWkeLDX5dJEkI2oRwD4wf39TWc4tQpIkZzzkkca4JHevkgU20Rt35BMAB0cCILC4zKSeOk3Eq4o2dHmjt4oGxGLtQrv8eG4C78sMG5zZt+Lfpoj2zRuqwgXHqSDHsmTFhbYCClSu/ZJ3VgUM2QxBpxQJS9zzFzMTxpiKUXQsPoHUfBPCRS3En7xTJU/R1emsRgKPhCTPHnWrRyIeV366mcsnMp0Jja26+bN59zAfU7bPuCZAipx6u0SKxUjef3fbYLpaREtwQTr5J6/G3SE1D4z4f7pL4m6041NyV5UCaUQJBZHZqRHpKDJjz2bTTzUNsKePJeUd0stHDuKPBeQIY/JIvztBhI8Js0jgXXYODTkz8nZmGQI9JhRTmfuC54pGzGgeSGM+HyY3HMo1rfFUmCxKZ5/mGHdgF6rowU263oyFVD7jsME1dvSv+6jqspW9bGxvruRtDphNYXHEP9fIfyf87Ylvip/qlubQ04MO0weikKbMRNzpkHPSArTbaLLeeXoZ7xDg4Xzf2RcjmZkNabGbTB49V2N58Zlkci7JTjKTdvYMu2DGX098a/hpuaVYdQGk2Sr+xIHurZczAq/5BSLL/WET2h98t396EEd3gYFFOt9GG1hZQ5O3fTElKD0WElbiq6qcMDA9T80GfHSav4I/t+df6aMh0lubkGQl6s1hiuf/g9P0wPVxLo7IjKi0nlgruQLY5c2zrIjRHVd/6nI03Pt1QjzR7rln+MGnNo0+dLLkXXz2Q4AWCtxAxYst73quawoQz3LrNKSaAq0VEEmllWKW8lgEYHVMhH4NIVllxH9DCz2/nakTLOqAXkL8w6TXNDlwnakR8jrQtoBZCIbKvkf0rj5N9rYVw1kB1b+x/sOFmLUXnFNhWcQdmoJwSWfhRpyJ6FoPZ+62PD1JAiZNv/c1fcPDWvdPB8dP"
+       },
+       {
+        "functionCall": {
+         "name": "_0_getConsequences",
+         "args": {
+          "elementId": "trial-btn"
+         },
+         "id": "call_398533"
+        }
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "e8aVauvcJIOtjuMPjOy8iQY",
+   "usageMetadata": {
+    "promptTokenCount": 1181,
+    "candidatesTokenCount": 41,
+    "totalTokenCount": 1432,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 1181
+     }
+    ],
+    "thoughtsTokenCount": 210,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": [
+    {
+     "functionResponse": {
+      "name": "_0_explainAction",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"trial-btn\\\",\\n  \\\"label\\\": \\\"Start your free trial\\\",\\n  \\\"explanation\\\": \\\"Starts a 14-day free trial that automatically converts into a paid subscription at $49.99/month unless cancelled before the trial ends. A payment card is required and charged immediately if the trial isn't cancelled in time.\\\",\\n  \\\"policyReferences\\\": [\\n    \\\"Terms §2: Your account and trial\\\"\\n  ]\\n}\"}]}"
+      }
+     }
+    },
+    {
+     "functionResponse": {
+      "name": "_0_getConsequences",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"trial-btn\\\",\\n  \\\"consequences\\\": {\\n    \\\"dataShared\\\": [\\n      \\\"payment card details\\\"\\n    ],\\n    \\\"moneyCommitted\\\": \\\"$49.99/month after the trial, charged automatically\\\",\\n    \\\"recurringCharge\\\": \\\"$49.99/month\\\",\\n    \\\"reversible\\\": true,\\n    \\\"timeLimit\\\": \\\"14-day trial — cancel before it ends to avoid the charge\\\"\\n  },\\n  \\\"policyReferences\\\": [\\n    \\\"Terms §2: Your account and trial\\\"\\n  ],\\n  \\\"source\\\": \\\"page-declared policy\\\"\\n}\"}]}"
+      }
+     }
+    }
+   ],
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Monday, August 31, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_compareChoices",
+        "description": "Compare the selected FinePrint choice against the lower-risk option on the page, including data sharing, costs, and reversibility.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_detectDarkPatterns",
+        "description": "Identify dark-pattern techniques associated with a FinePrint choice, including pre-checked consent, hidden opt-outs, false urgency, visual asymmetry, and buried clauses.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_explainAction",
+        "description": "Explain what a FinePrint choice actually does in plain language. Use before a user accepts cookies, terms, a trial, permissions, or an upgrade.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getAccessibleSummary",
+        "description": "Explain a FinePrint choice in standard, elderly-friendly, or low-vision-friendly wording. The facts remain the same; only the phrasing changes.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          },
+          "mode": {
+           "type": "string",
+           "enum": [
+            "standard",
+            "elderly",
+            "lowVision"
+           ],
+           "description": "Accessibility phrasing to use."
+          }
+         },
+         "required": [
+          "elementId",
+          "mode"
+         ]
+        }
+       },
+       {
+        "name": "_0_getConsequences",
+        "description": "Return the structured privacy, money, recurring-charge, reversibility, and timing consequences of one FinePrint choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_performSafeAction",
+        "description": "Perform the lower-risk FinePrint action in the page UI, such as rejecting cookies, declining permissions, or turning off partner sharing. This changes page state but never makes a purchase or shares data.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "739",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 18:23:04 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=6040",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "functionCall": {
+         "name": "_0_detectDarkPatterns",
+         "args": {
+          "elementId": "trial-btn"
+         },
+         "id": "call_341002"
+        },
+        "thoughtSignature": "EpQCCpECARFNMg8EvMBdr93JYZpxhGQUsUhaM0bmJ3RKA9+PkkZALphA070nKf0Nm3O/xDeAXTxwWySjyJuydAKBg5hwLPgRTOYWjB/+F16wThv9O8Eg18HLRApW1dbHtsQwfAjD2JtCGKpHMgy+74SW0uCISHVCLIEGoFdpIOrOxj7hvwOtZoB6hnpyn7+7+IorFpimd70H+awtFdZrzqFSxOnLufW8gbKCZUGD8Jx4QOdA5HdabEEBzt9IJ0uT2BCQ1xNYcjv5w4kt6WB7uTMDnNjPQDyGMDfY35oShItb9Ngtele3x6shyLQ+muLk2whJe2vW26ZPCGYjx9iSYfo2T6cM4aVAyGV4ZzdkGco27ovJFimZ"
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "g8aVaoDzDY3Lg8UP-KK2sQY",
+   "usageMetadata": {
+    "promptTokenCount": 1731,
+    "candidatesTokenCount": 21,
+    "totalTokenCount": 1796,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 1731
+     }
+    ],
+    "thoughtsTokenCount": 44,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": [
+    {
+     "functionResponse": {
+      "name": "_0_detectDarkPatterns",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"trial-btn\\\",\\n  \\\"flags\\\": [\\n    {\\n      \\\"flag\\\": \\\"falseUrgency\\\",\\n      \\\"meaning\\\": \\\"A countdown or scarcity claim isn't actually tied to a real deadline.\\\"\\n    },\\n    {\\n      \\\"flag\\\": \\\"buriedClause\\\",\\n      \\\"meaning\\\": \\\"An important term is placed where it's unlikely to be read.\\\"\\n    }\\n  ]\\n}\"}]}"
+      }
+     }
+    }
+   ],
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Monday, August 31, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_compareChoices",
+        "description": "Compare the selected FinePrint choice against the lower-risk option on the page, including data sharing, costs, and reversibility.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_detectDarkPatterns",
+        "description": "Identify dark-pattern techniques associated with a FinePrint choice, including pre-checked consent, hidden opt-outs, false urgency, visual asymmetry, and buried clauses.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_explainAction",
+        "description": "Explain what a FinePrint choice actually does in plain language. Use before a user accepts cookies, terms, a trial, permissions, or an upgrade.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getAccessibleSummary",
+        "description": "Explain a FinePrint choice in standard, elderly-friendly, or low-vision-friendly wording. The facts remain the same; only the phrasing changes.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          },
+          "mode": {
+           "type": "string",
+           "enum": [
+            "standard",
+            "elderly",
+            "lowVision"
+           ],
+           "description": "Accessibility phrasing to use."
+          }
+         },
+         "required": [
+          "elementId",
+          "mode"
+         ]
+        }
+       },
+       {
+        "name": "_0_getConsequences",
+        "description": "Return the structured privacy, money, recurring-charge, reversibility, and timing consequences of one FinePrint choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_performSafeAction",
+        "description": "Perform the lower-risk FinePrint action in the page UI, such as rejecting cookies, declining permissions, or turning off partner sharing. This changes page state but never makes a purchase or shares data.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-partners-row",
+            "cookie-reject",
+            "cookie-manage",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "personalize-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of the FinePrint choice to inspect."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "1957",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 18:23:10 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=5146",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "text": "Yes, you can sign up for the free trial, but here is what happens when you do:\n\n### **Key Details:**\n* **Trial Duration:** 14 days.\n* **Cost & Billing:** It is free for the first 14 days, but **automatically converts into a paid subscription of $49.99/month** once the trial ends.\n* **Payment Card Required:** You must provide payment details upfront, and your card will be charged automatically unless you cancel in time.\n* **Reversibility:** You can cancel before the 14-day trial ends to avoid any charges.\n\n### **Important Fine Print Considerations:**\n* **Buried Clauses:** Automatic renewal and billing details are stated in the fine print (Terms §2).\n* **Urgency Claims:** Any countdown timer or scarcity claims regarding the trial offer may be artificial.\n\nIf you decide to sign up, set a reminder to cancel before the 14-day window expires if you do not wish to continue with the paid monthly subscription.",
+        "thoughtSignature": "Ev0HCvoHARFNMg/9LbB0/wMVbZvlnbJv6IM4kfMblHd7c345ii51SfHtT8nxfi9swkCFeAbAAxh7daoWVEBCxwX13QnS08rGYTkUDCupphLsdKq1i5CN8WfCPxXOdJs6eOFAsu9wiXSeSXVmFtqSSHAwftK2EgFz/ElYCr6GjectOl5ToAO6XVLY0pP9pSinBwauxrlPZNMby5VUBevZ2ugoxP8uNhnveqvAscH4brPAlE59pIGmRfqXmjrdGhV5aAa5V2Ic4EnbvvIMdM1vauvNTd93X3qr460bn/PdB9j4lrGJrjGwc4+/3kFAPH6NtBUA64zHgUsrShptUqMXa/8TpFB3XdsxaQcvpfJFUXh7wtL+zchAzTOxMsw0Oscv4tQMCzENoNYj0zxvma8hpPIbcIpkUqXjNebn5yU2+UAKA1B1tFcuAbt5B1ox64/sD3FTVZcPl4IQ1MzXo35ftQbDOjpFuXiWN/VvtlnnvLv9THTcmLheVjNbu0oImMDX+Ar4etqotdHiwPhHsO/2n64fuX081F/fIZGsQ2GnOL3liSvuxT6nhzOD2pShoZrq4aLDmcHc8j2J/+4j+tOPVoxO3F27iVWJuvBULvJQ03VjsQw5XKsBKU9SU7ZhM30OuA4oj+L9D1AmwGP8yMS8/hKn/4PaTk6n0WersXAHTnlEb5fUqlxRGH+SvE9wbynCaxkHXKqHyvBumJi5Eew0O+g2H95Xn4GDQXzPChoIyy4od9DrybQiRVm4U9v6pOzIHDQyjGAWkFsCBZbzpAQ56SySFD+sd5ODO7rAA3Jt+AvTAvEnRRUP6DkYhFaHh67myYBb/zIdlWTPulMRy35Rbp1ORPlPGScoY4CqtuJgI1IcWNgLN5fCWHu8XPKCmHsiPWR5E13N9Ybi41UBx1J2m8xcSkmpJRfBIG4lVGc/2VY0XrsTxdGxn5hciDyn0flvmWs2eKgeSICoVIrB6D2T+PfQsrfJt85l8rrHZSuFhs8sOl9Xb8mlNoiUPGtzGDA1t4LIv8TjH/PwkMm9Kjm6mo33Myr0/Vw3dOlEwQWMONhoVz5Fv19uXjEsNY0gWYOpgGpYqIDqo8sDfywyttEtkTFf1F2A/BmCgqt18RS3mIhuQJtJeCZM+n3Eaghc8xVVstXka5tPXtuAycOoVkBnhELIZam4ZVUMhs0jEYDq0Rfafw9YyPiq7OOryA50gOS1iT0dCn3D2sUZhnBg+mZQNeLHmpoi/cFPbcMO42RPS2+8iq9C0ToeZ/XIwqS4AZv4su+kEr8ZoJZ7Uv8usmVrN0qOtvqEAwZD9O+sLY4LrN4stK6IOjOOS1HG/fDhofwQCZRJNoxJ03Pt5W7vvujeAQ=="
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "icaVasHuEfj_juMPrKu3-Ao",
+   "usageMetadata": {
+    "promptTokenCount": 1921,
+    "candidatesTokenCount": 215,
+    "totalTokenCount": 2349,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 1921
+     }
+    ],
+    "thoughtsTokenCount": 213,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": "Before I accept anything on this page, inspect the costs, data sharing, defaults, alternatives, and policy references. Then set essential cookies only.",
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Tuesday, September 1, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_getAvailableChoices",
+        "description": "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getChoiceDetails",
+        "description": "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getDecisionImpact",
+        "description": "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getPolicyReferences",
+        "description": "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_setPrivacyPreference",
+        "description": "Set an available privacy-protective preference in the demo page after a visible confirmation. It never purchases, transmits data, or grants a real permission.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "preference": {
+           "type": "string",
+           "enum": [
+            "essential-cookies",
+            "decline-recommendation-permissions"
+           ],
+           "description": "Privacy preference to apply."
+          }
+         },
+         "required": [
+          "preference"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "1222",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 19:55:48 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=4429",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "functionCall": {
+         "name": "_0_getAvailableChoices",
+         "args": {
+          "elementId": "cookie-accept"
+         },
+         "id": "call_393226"
+        },
+        "thoughtSignature": "EtcFCtQFARFNMg+HwzSHsbqa92NWh5bKVt7OSqqToqJ/jJMgIOJirE8Y6Ih1v3EzP4G4YJ5Ownr+RC6GazxJq8bnKaQNl3Rior2AtaTZF91CgNubgF7UwYrcsd8/ys3lW66eD0WWyTQ3YF4j+im87vPzT+L7JUjWuGeTVq35BnxqFdGehDIghfgbxujPLki+MG14PIqDdwK1BpR1E16jY8bq3Ev5QCd1OfriYS/wIfUW1jFo5XOphezEUR7dIiFv8WvDf0VJNXbnxuShYWNqr86u9F8LA3Y2gBlMdrCBn6XtPQO7QZw2S1DecvqsbHw+PMbhLmwYn8kwphljGlmzWzGH6zpECW9zxJTXript8CEBolBqcNYV9NUscjVo178JJCnTdFGH+3enm+ERu6wpK7wfUEzbYAMDr8EgpyyLj9ZEizKST7WtkG0Xe8CfJ0Ll5IUnQ7SBh8/029N1K5f4jOK4xFm04zyKTDoYoDdFik282ynUGoeso1BZ6iM/dkqVN1JCa5rIwVI6KDpehHJMTLWbknJBDRG4tqVSyJFrDF+d8gh+7euw3wrzrOQtfDk7KtUupGh4uX1amvubIjUBCMABOCN6i6ejbCd5linJsZdCl+ZgU/KYQ6Tr4P21Z9XMNoB6n1YJveFEeFRqy4Kp5jkLkbrcuGBZ0zGLZi2gmJ2mDTwjLjMLc+co5qDHjNHeCkzIw6iGPLsO+ECNZSOgzuUstnEeB1oOc9Zy4W53Or+iDZQgYkpDSp9eSi1TMyEdS91N/QmcDvVa8Fkk6fPG69sd8hwgy+cC2Zie7+qhWfTxBfvXkoqRC84a5wm/Q3YhXORcxREZUHLUKrWCrJ0ieWuwT2XniN4tQw4PcD8ytsB+xyQRR8UJBXBudovpz62rpn5Ll+Eoxvi6sL/ialkZzbjcQZKpFfAF3cnL8ZC1PrMIUlRbhfZwLORtceeDFPFriwiFOTSDL1x33A=="
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "QNyVap7lGem2juMP3s7bkAs",
+   "usageMetadata": {
+    "promptTokenCount": 2028,
+    "candidatesTokenCount": 21,
+    "totalTokenCount": 2221,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 2028
+     }
+    ],
+    "thoughtsTokenCount": 172,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": [
+    {
+     "functionResponse": {
+      "name": "_0_getAvailableChoices",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-accept\\\",\\n  \\\"choices\\\": [\\n    {\\n      \\\"choiceId\\\": \\\"cookie-accept\\\",\\n      \\\"consequences\\\": {\\n        \\\"dataShared\\\": [\\n          \\\"browsing activity\\\",\\n          \\\"device identifiers\\\",\\n          \\\"shared with ~40 advertising partners\\\"\\n        ],\\n        \\\"moneyCommitted\\\": null,\\n        \\\"recurringCharge\\\": null,\\n        \\\"reversible\\\": true,\\n        \\\"timeLimit\\\": null\\n      },\\n      \\\"defaultSelected\\\": false\\n    },\\n    {\\n      \\\"choiceId\\\": \\\"cookie-reject\\\",\\n      \\\"consequences\\\": {\\n        \\\"dataShared\\\": [],\\n        \\\"moneyCommitted\\\": null,\\n        \\\"recurringCharge\\\": null,\\n        \\\"reversible\\\": true,\\n        \\\"timeLimit\\\": null\\n      },\\n      \\\"defaultSelected\\\": false\\n    },\\n    {\\n      \\\"choiceId\\\": \\\"cookie-partners-row\\\",\\n      \\\"consequences\\\": {\\n        \\\"dataShared\\\": [\\n          \\\"browsing activity\\\",\\n          \\\"device identifiers\\\",\\n          \\\"advertising partner identifiers\\\"\\n        ],\\n        \\\"moneyCommitted\\\": null,\\n        \\\"recurringCharge\\\": null,\\n        \\\"reversible\\\": true,\\n        \\\"timeLimit\\\": null\\n      },\\n      \\\"defaultSelected\\\": true\\n    }\\n  ],\\n  \\\"source\\\": \\\"page-declared policy\\\"\\n}\"}]}"
+      }
+     }
+    }
+   ],
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Tuesday, September 1, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_getAvailableChoices",
+        "description": "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getChoiceDetails",
+        "description": "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getDecisionImpact",
+        "description": "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getPolicyReferences",
+        "description": "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_setPrivacyPreference",
+        "description": "Set an available privacy-protective preference in the demo page after a visible confirmation. It never purchases, transmits data, or grants a real permission.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "preference": {
+           "type": "string",
+           "enum": [
+            "essential-cookies",
+            "decline-recommendation-permissions"
+           ],
+           "description": "Privacy preference to apply."
+          }
+         },
+         "required": [
+          "preference"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "774",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 19:55:51 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=2643",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "functionCall": {
+         "name": "_0_getChoiceDetails",
+         "args": {
+          "elementId": "cookie-accept"
+         },
+         "id": "call_3590628"
+        },
+        "thoughtSignature": "EocCCoQCARFNMg9Dw25xqB/AVcpY/TyTXNGDoIdqH55B6asLAjAayp4zbEkBpXzl27ud5oZAii/0TMTXhq5/ErbmHajhX/Yi7MbhQMUSpLYigCsc31wFjV7449zUKrVKk0Sjj43fjmJog+XWYhy5s4EHgmdsWFzgDS2g6Mql/rd2Wyv9gL5M1J0+O8CqzGf/AV1QlU1OIERi3wKVT+geUQYbTDtFKkWUuLdcDdPdWQI67T7VitBXItRtw/3Z9HvHim3uKiUFmMo3iiaghlbLxZfoUiuOcl130mG8Dg2Qf+VuD+Ceff13ItxB/1MN/soex9DLEIhMUzJ5gU41Ojg+zqHkCckqhvgT9Tw="
+       },
+       {
+        "functionCall": {
+         "name": "_0_getDecisionImpact",
+         "args": {
+          "elementId": "cookie-accept"
+         },
+         "id": "call_3590629"
+        }
+       },
+       {
+        "functionCall": {
+         "name": "_0_getPolicyReferences",
+         "args": {
+          "elementId": "cookie-accept"
+         },
+         "id": "call_3590630"
+        }
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "RNyVarfEO7SFqfkPzpms4Qs",
+   "usageMetadata": {
+    "promptTokenCount": 2563,
+    "candidatesTokenCount": 63,
+    "totalTokenCount": 2675,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 2563
+     }
+    ],
+    "thoughtsTokenCount": 49,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": [
+    {
+     "functionResponse": {
+      "name": "_0_getChoiceDetails",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-accept\\\",\\n  \\\"label\\\": \\\"Accept all (cookies)\\\",\\n  \\\"decision\\\": \\\"cookie-consent\\\",\\n  \\\"defaultSelected\\\": false,\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: advertising-partner sharing\\\"\\n  ]\\n}\"}]}"
+      }
+     }
+    },
+    {
+     "functionResponse": {
+      "name": "_0_getDecisionImpact",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-accept\\\",\\n  \\\"consequences\\\": {\\n    \\\"dataShared\\\": [\\n      \\\"browsing activity\\\",\\n      \\\"device identifiers\\\",\\n      \\\"shared with ~40 advertising partners\\\"\\n    ],\\n    \\\"moneyCommitted\\\": null,\\n    \\\"recurringCharge\\\": null,\\n    \\\"reversible\\\": true,\\n    \\\"timeLimit\\\": null\\n  },\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: advertising-partner sharing\\\"\\n  ],\\n  \\\"source\\\": \\\"page-declared policy\\\"\\n}\"}]}"
+      }
+     }
+    },
+    {
+     "functionResponse": {
+      "name": "_0_getPolicyReferences",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-accept\\\",\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: advertising-partner sharing\\\"\\n  ]\\n}\"}]}"
+      }
+     }
+    }
+   ],
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Tuesday, September 1, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_getAvailableChoices",
+        "description": "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getChoiceDetails",
+        "description": "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getDecisionImpact",
+        "description": "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getPolicyReferences",
+        "description": "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_setPrivacyPreference",
+        "description": "Set an available privacy-protective preference in the demo page after a visible confirmation. It never purchases, transmits data, or grants a real permission.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "preference": {
+           "type": "string",
+           "enum": [
+            "essential-cookies",
+            "decline-recommendation-permissions"
+           ],
+           "description": "Privacy preference to apply."
+          }
+         },
+         "required": [
+          "preference"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "711",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 19:55:53 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=2359",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "functionCall": {
+         "name": "_0_getChoiceDetails",
+         "args": {
+          "elementId": "cookie-reject"
+         },
+         "id": "call_520348"
+        },
+        "thoughtSignature": "EsoBCscBARFNMg+HL9YaHW8vXELPnhVYPpgKVHcHZNc+qeEH25ZLoZXJt0gQ1T2SZdYQqeUSq+zp8hSh9wveeXTDD5E8r/PgJWARB23ZYlY9sn78yGUk0DttrT1YCyYWvCZWfJRVMB3OKpWikaZeYw5mJ0TBzHC/9lA76F0UZJtqmNGeB4PdQFuQBWOFK5twvkuzmiVd/t8817f6tIBlKXxL9tCLV/m/Akx8s/SA5lfS0OpRDNP3Ta+GcGL4uoR0lk8kWGr+g6oalXrexQ=="
+       },
+       {
+        "functionCall": {
+         "name": "_0_getDecisionImpact",
+         "args": {
+          "elementId": "cookie-reject"
+         },
+         "id": "call_520349"
+        }
+       },
+       {
+        "functionCall": {
+         "name": "_0_getPolicyReferences",
+         "args": {
+          "elementId": "cookie-reject"
+         },
+         "id": "call_520350"
+        }
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "R9yVaovaK7L8juMPkJW1wAw",
+   "usageMetadata": {
+    "promptTokenCount": 2975,
+    "candidatesTokenCount": 63,
+    "totalTokenCount": 3065,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 2975
+     }
+    ],
+    "thoughtsTokenCount": 27,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": [
+    {
+     "functionResponse": {
+      "name": "_0_getChoiceDetails",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-reject\\\",\\n  \\\"label\\\": \\\"Reject all (cookies)\\\",\\n  \\\"decision\\\": \\\"cookie-consent\\\",\\n  \\\"defaultSelected\\\": false,\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: essential cookies only\\\"\\n  ]\\n}\"}]}"
+      }
+     }
+    },
+    {
+     "functionResponse": {
+      "name": "_0_getDecisionImpact",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-reject\\\",\\n  \\\"consequences\\\": {\\n    \\\"dataShared\\\": [],\\n    \\\"moneyCommitted\\\": null,\\n    \\\"recurringCharge\\\": null,\\n    \\\"reversible\\\": true,\\n    \\\"timeLimit\\\": null\\n  },\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: essential cookies only\\\"\\n  ],\\n  \\\"source\\\": \\\"page-declared policy\\\"\\n}\"}]}"
+      }
+     }
+    },
+    {
+     "functionResponse": {
+      "name": "_0_getPolicyReferences",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-reject\\\",\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: essential cookies only\\\"\\n  ]\\n}\"}]}"
+      }
+     }
+    }
+   ],
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Tuesday, September 1, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_getAvailableChoices",
+        "description": "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getChoiceDetails",
+        "description": "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getDecisionImpact",
+        "description": "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getPolicyReferences",
+        "description": "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_setPrivacyPreference",
+        "description": "Set an available privacy-protective preference in the demo page after a visible confirmation. It never purchases, transmits data, or grants a real permission.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "preference": {
+           "type": "string",
+           "enum": [
+            "essential-cookies",
+            "decline-recommendation-permissions"
+           ],
+           "description": "Privacy preference to apply."
+          }
+         },
+         "required": [
+          "preference"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "616",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 19:55:55 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=2229",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "functionCall": {
+         "name": "_0_getChoiceDetails",
+         "args": {
+          "elementId": "cookie-partners-row"
+         },
+         "id": "call_401607"
+        },
+        "thoughtSignature": "Eo0BCooBARFNMg9rcxMLDk03MbEQEkBllm/0isANgTdWtMCYdoq1XncTEwgsV0RvuCwldodms846AYKBlhc2niOWcV1fPmMtwwbB4EW1U0szHffPIpYU3hY4VtSBVQC8Iw+TYMi1TZBMo+jUUMDvmUhyWTntP+KozV7dE3DkGhr3cUKyzRUk+TDwmxCFiEAs"
+       },
+       {
+        "functionCall": {
+         "name": "_0_getDecisionImpact",
+         "args": {
+          "elementId": "cookie-partners-row"
+         },
+         "id": "call_401608"
+        }
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "StyVapbBCN3vqfkP5PK96Qc",
+   "usageMetadata": {
+    "promptTokenCount": 3334,
+    "candidatesTokenCount": 46,
+    "totalTokenCount": 3392,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 3334
+     }
+    ],
+    "thoughtsTokenCount": 12,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": [
+    {
+     "functionResponse": {
+      "name": "_0_getChoiceDetails",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-partners-row\\\",\\n  \\\"label\\\": \\\"Share activity with advertising partners\\\",\\n  \\\"decision\\\": \\\"cookie-consent\\\",\\n  \\\"defaultSelected\\\": true,\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: partner sharing\\\"\\n  ]\\n}\"}]}"
+      }
+     }
+    },
+    {
+     "functionResponse": {
+      "name": "_0_getDecisionImpact",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"elementId\\\": \\\"cookie-partners-row\\\",\\n  \\\"consequences\\\": {\\n    \\\"dataShared\\\": [\\n      \\\"browsing activity\\\",\\n      \\\"device identifiers\\\",\\n      \\\"advertising partner identifiers\\\"\\n    ],\\n    \\\"moneyCommitted\\\": null,\\n    \\\"recurringCharge\\\": null,\\n    \\\"reversible\\\": true,\\n    \\\"timeLimit\\\": null\\n  },\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: partner sharing\\\"\\n  ],\\n  \\\"source\\\": \\\"page-declared policy\\\"\\n}\"}]}"
+      }
+     }
+    }
+   ],
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Tuesday, September 1, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_getAvailableChoices",
+        "description": "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getChoiceDetails",
+        "description": "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getDecisionImpact",
+        "description": "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getPolicyReferences",
+        "description": "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_setPrivacyPreference",
+        "description": "Set an available privacy-protective preference in the demo page after a visible confirmation. It never purchases, transmits data, or grants a real permission.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "preference": {
+           "type": "string",
+           "enum": [
+            "essential-cookies",
+            "decline-recommendation-permissions"
+           ],
+           "description": "Privacy preference to apply."
+          }
+         },
+         "required": [
+          "preference"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "848",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 19:55:59 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=3862",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "functionCall": {
+         "name": "_0_setPrivacyPreference",
+         "args": {
+          "preference": "essential-cookies"
+         },
+         "id": "call_355217"
+        },
+        "thoughtSignature": "EvECCu4CARFNMg9K0hMfVN6uHY4I1P8BFa4SC2l5pLbO0dLLNZ1Noe3s5JzTkUmOzcDHCsvwkvT07bAVVsBpuCOwa1zuv9az/6oYa82Weqq0AvF4+eOP3SI2oGqyj7ejKEe3RFbSaxr8TTUkSw/Us+xQBY4GVFEWhJqFJ6PiwP/lK9JVtyyzgbUERT3cKUSemi0Gh6StMmwtPrgRXl1B/dqqwKrMFw/k+H5JEA8lVtJD1xi0VRHCC/gffrndn475+QDyk1TRsZ9F3ZoHVyajHoV+pIK8tiptT3Y07mfsE7B5LFPOUJ2KDYrWvQXKzSbWgalWJ3oMU6n9eRwK4DmoAFOCIDsHOCasUHsPpHly9SX+s9DNjrLt3vGuOsUJPJ94Pu2ElZza8Ek5wx88tpevLms1FoUWGIKImXr+igMGkDXY4HSW2QtufNXuKrzAbUlYH3l2aN4r1WCV9hi1RWAJY1ik1cAKDupyy5hSjNhcjhOvq2iu"
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "TNyVap_OF5ez4-EPzd7rmAc",
+   "usageMetadata": {
+    "promptTokenCount": 3629,
+    "candidatesTokenCount": 20,
+    "totalTokenCount": 3710,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 3629
+     }
+    ],
+    "thoughtsTokenCount": 61,
+    "serviceTier": "standard"
+   }
+  }
+ },
+ {
+  "userPrompt": {
+   "message": [
+    {
+     "functionResponse": {
+      "name": "_0_setPrivacyPreference",
+      "response": {
+       "result": "{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"changed\\\": true,\\n  \\\"selected\\\": \\\"cookie-reject\\\",\\n  \\\"preference\\\": \\\"essential-cookies\\\",\\n  \\\"policyReferences\\\": [\\n    \\\"Cookie notice: essential cookies only\\\"\\n  ]\\n}\"}]}"
+      }
+     }
+    }
+   ],
+   "config": {
+    "systemInstruction": [
+     "You are an assistant embedded in a browser tab.",
+     "User prompts typically refer to the current tab unless stated otherwise.",
+     "Use the provided tools to query page content when you need it.",
+     "Today's date is: Tuesday, September 1, 2026",
+     "CRITICAL RULE: Whenever the user provides a relative date (e.g., \"next Monday\", \"tomorrow\", \"in 3 days\"),  you must calculate the exact calendar date based on today's date.",
+     "CRITICAL RULE: Do not try to use other tools than the available ones."
+    ],
+    "tools": [
+     {
+      "functionDeclarations": [
+       {
+        "name": "_0_getAvailableChoices",
+        "description": "List the declared choices in the same decision group, including each choice's impact and whether it is selected by default.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getChoiceDetails",
+        "description": "Return the site's declared decision group, default selection state, and policy references for a visible choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getDecisionImpact",
+        "description": "Return the site's declared data sharing, financial commitment, renewal, reversibility, and timing for one choice.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_getPolicyReferences",
+        "description": "Return the page policy sections that govern a choice, so an agent can present or inspect the relevant terms.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "elementId": {
+           "type": "string",
+           "enum": [
+            "cookie-accept",
+            "cookie-reject",
+            "cookie-partners-row",
+            "terms-row",
+            "terms-link",
+            "trial-btn",
+            "permissions-allow",
+            "permissions-decline",
+            "upgrade-cta"
+           ],
+           "description": "The data-mcp-id of a choice declared in this page's policy."
+          }
+         },
+         "required": [
+          "elementId"
+         ]
+        }
+       },
+       {
+        "name": "_0_setPrivacyPreference",
+        "description": "Set an available privacy-protective preference in the demo page after a visible confirmation. It never purchases, transmits data, or grants a real permission.",
+        "parametersJsonSchema": {
+         "type": "object",
+         "properties": {
+          "preference": {
+           "type": "string",
+           "enum": [
+            "essential-cookies",
+            "decline-recommendation-permissions"
+           ],
+           "description": "Privacy preference to apply."
+          }
+         },
+         "required": [
+          "preference"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "response": {
+   "sdkHttpResponse": {
+    "headers": {
+     "access-control-allow-origin": "chrome-extension://gbpdfapgefenggkahomfgkhfehlcenpd",
+     "access-control-expose-headers": "x-gemini-service-tier,vary,vary,vary,content-encoding,date,server,content-length",
+     "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+     "content-encoding": "gzip",
+     "content-length": "2746",
+     "content-type": "application/json; charset=UTF-8",
+     "date": "Mon, 31 Aug 2026 19:56:30 GMT",
+     "server": "scaffolding on HTTPServer2",
+     "server-timing": "gfet4t7; dur=6388",
+     "vary": "Origin, X-Origin, Referer",
+     "x-content-type-options": "nosniff",
+     "x-frame-options": "SAMEORIGIN",
+     "x-gemini-service-tier": "standard",
+     "x-xss-protection": "0"
+    }
+   },
+   "candidates": [
+    {
+     "content": {
+      "parts": [
+       {
+        "text": "Here is the inspection of the cookie choices on this page, followed by confirmation of the privacy setting updated for you:\n\n---\n\n### **1. Decision Group Breakdown**\n\n| Choice | Default State | Data Shared | Financial Cost | Policy Reference |\n| :--- | :---: | :--- | :---: | :--- |\n| **Accept All** (`cookie-accept`) | Unselected | Browsing activity, device identifiers (shared with ~40 ad partners) | $0 | *Cookie notice: advertising-partner sharing* |\n| **Partner Sharing** (`cookie-partners-row`) | **Selected (Default)** | Browsing activity, device identifiers, advertising partner IDs | $0 | *Cookie notice: partner sharing* |\n| **Reject All / Essential Only** (`cookie-reject`) | Unselected | **None** (essential cookies only) | $0 | *Cookie notice: essential cookies only* |\n\n---\n\n### **2. Summary of Findings**\n\n* **Costs:** None of the cookie choices involve financial commitments or recurring charges.\n* **Defaults:** The option to share activity with advertising partners (`cookie-partners-row`) is enabled by default.\n* **Alternatives:** You can accept all tracking, selectively disable partner sharing, or reject all non-essential cookies.\n* **Reversibility:** All cookie selections can be reversed/updated at any time.\n\n---\n\n### **3. Action Taken**\n\nI have set your privacy preference to **Essential Cookies Only** (`cookie-reject`). No browsing activity or device identifiers will be shared with advertising partners.",
+        "thoughtSignature": "Eu0MCuoMARFNMg87neAoVfaixAyi24kxK39pBmVXD/JV7tdMAnyNfmrumplf2jPk3FlC/xx+rDrhcsBOAdklNSHv4zW1sSqFVs4zP8SkMxVZL1wPlij9rGY4VrTtQRCiVgf3+CTS69BKLJpe9O8Haq+WuPF8h4gqBapx2ngDIl8pLiYjC6Mf3ojZo9qiuRbzk2AvNsM7UhT0LNKN2BwaaF/Ol1sIpjrBtG5L/gl4WAxVAuWrSTRUn9gYTsj6bsLZN7M4tOjU3Bv8hT8junYqYB5hgsFMTQXb17yokTXfWnZBQ95phGjxMsI50RKVATH7wkWZAjzoJe47LdQMFlTiGXRzwG/9gy1Bm/4g5a9wGZvrBh+0CI9wZG1WVYeuvwcp7sl1jMUZZQ4qw9+8vpH0/c5YVug9j75lPU3sh1KGZ0IGl93+M3mTPMhrvK5/rMbDA9hIG/sxBgALA/Bo14hCyTlmR9Pb9BOApwukbSKXn21L09hg9Is+skw4FWFCBhjiTXZG0PPi+htX3HXFi7TLcCDceIEXNXyd8XNRxe7/JMZCbwKT5GRYfaTA7gZF3amQ+XIh5Xj3gqwUubhJFmrfH7v/IuhfjzdxtsHf3qbGbuEa2aTKBkLeJSg+UvNtRhkCDFH/VHMTcmFVpo43Q0uFBeKUVhQCjKAlw5ZTMBocA+iHXcQhdDxjFcXxsMFZROVf89cNmvLNp719AIPAEvtV+Pu5SH0nFXI6XGIDLpdV8G2PYegZf2/L3L14+oK+7QJorLx94zMZHMwsS6pbJsjFJIVse6kRCtkJ6+/6lUeK+P0JGKYpb+yQ1gCvcaBY2fpaQpbz67XkCooZSa18TMyjcn38LbfnalTOtX7GOcQy6BT730q5Jlg/ajkt9k+glPYfHUvsGiDgBKh74wnilrIH6pypycyBq6iTq2yJHNoieo8rigfRTHETj8GZcLZPqenMhmsyMjtoyYeOYpR5KJuBGwicsH80N8PLj+ryiaK/444k6iZKK/Do04SDGNA3xzODIn040kLpYKGAqaoqagMY/M38Wlr6KmxRG5ZP9xNQX0iu8n9oZ/8PhkZwnBTuOXB9MZzJde7dNNtwDjH7Aq8lL+iUJuJ2B/J7Huwg1IPXPp3De3WQYcBUDKEzOqF3Q+eE6zB5toE1yqqOwPXooRt3rhS8N0/cBEjINj+2nkiu8EyRaU/wZUL4qeIOKk9fPUW5cKSiTrJuHFJOX5iLuX/k/h1yE6h70uxY4F/wQTTQk0M4dUhJLKOPSAwyBWbPAI7dVTKvVd2e1d/j1KRelH4UmLEEA+UEWI0WkPkl4dVP0qQt9nFQtTpzvvKFTJExc9ldNfq5ELJ1+rbIG58HkiPP7xp25jFn2csFlAhjSWg2uJkiUuC0iJc9Xg2KizTId6YWMz6txQ3iSPa89GWfD38kcqfV9nuFHA0eRttrx+AIdDbjJ08ampCQ8NZAGiPc1QFcHhwg+kG0HOQQbBCVJmAW+g4xA8DW6R+cgvBEF8tM17uw2GDU94QTuDjSb3QPJLfglDRLngUOoT7ugGN35byM+3a6MbKbSZ8+QEqkD+6cVdxf0kZNEdGXhq7P9V+jIciKwkgRQUraU4+b3P4M/91PdZeyOiausZ7krGMrrn4tBpM/Lfm/id4PdDadzhyyre+3VizbYc7Jua3tDml1bgPlapQrMD5w8eAGQjzdmj/YYmkpsAK4f06kdDtmVqAfEUkaTVzjsMzrmCnDkvLO6asYgrXQD7i2PmMVn7d+EgIIgMJdV/QerssNvfKhHIhujLDjaXA2LrZlgKAuYRHJRKKCubm28S7Pw5eE0VK5VxLzUx8Rejr8o6EHYayDA7IVmZjcU7VmP23uEW3/MCrGAAeglgm/28bijFBozxmJiM5/s4EaDHhQ8oDg400GntaR2kkiVceuqurBrgY25O7hgJ3h7L5ZGBLshrd0SJBPhT1nT87Vg3XeiR9wzv/X06kGFlA1OfG7UUFouiElMcZHG66N/BknwCRDjqyG5ICUS/dDVHJXV6wVOX3I4Gzh8KW/cVG2q0Z96HOiR+Exfl7Yf5NKpqjo6J8Ehs9/9+XxHX/AU1iGHm+HAd68iwfFFvfnhpZNqkKl7q5TgnORO4Idp+i21xd8o2vGJ7tal5NaXPIKzE5uVel71w1szIGgI4wDv4xH9ONEgk9O8kYVe3VX53R+1A=="
+       }
+      ],
+      "role": "model"
+     },
+     "finishReason": "STOP",
+     "index": 0
+    }
+   ],
+   "modelVersion": "gemini-3.6-flash",
+   "responseId": "aNyVasKDCfj_juMPrKu3-Ao",
+   "usageMetadata": {
+    "promptTokenCount": 3787,
+    "candidatesTokenCount": 331,
+    "totalTokenCount": 4482,
+    "promptTokensDetails": [
+     {
+      "modality": "TEXT",
+      "tokenCount": 3787
+     }
+    ],
+    "thoughtsTokenCount": 364,
+    "serviceTier": "standard"
+   }
+  }
+ }
+]

@@ -227,16 +227,42 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("upgrade-cta").textContent = "Price held";
     window.highlightElement("upgrade-cta");
   };
-  const applySaferDefaults = () => {
-    applyEssentialCookies();
-    document.querySelector("#terms-row input").checked = false;
-    document.getElementById("terms-row").classList.add("agent-resolved");
-    document.querySelector(".signup-card").classList.add("agent-resolved");
-    document.getElementById("trial-btn").textContent = "Review $49.99/month before starting";
-    document.querySelector(".personalize-strip").classList.add("agent-resolved");
-    document.getElementById("personalize-btn").textContent = "Watch-history recommendations on";
-    lockTimerState();
-    ["terms-row", "trial-btn", "personalize-btn"].forEach(window.highlightElement);
+  const DECISION_LABELS = {
+    "cookie-consent": "essential cookies only",
+    "account-terms": "uncheck bundled marketing consent",
+    "trial-membership": "surface the $49.99/month renewal",
+    "recommendation-permissions": "decline extra recommendation permissions",
+    "founding-member-offer": "freeze the offer timer"
+  };
+  const applySaferDefaultFor = (decision) => {
+    if (decision === "cookie-consent") {
+      applyEssentialCookies();
+      return { changes: ["partner sharing off"], message: "essential cookies selected; partner sharing is off." };
+    }
+    if (decision === "account-terms") {
+      document.querySelector("#terms-row input").checked = false;
+      document.getElementById("terms-row").classList.add("agent-resolved");
+      window.highlightElement("terms-row");
+      return { changes: ["marketing consent unchecked"], message: "the bundled partner-offers checkbox is now unchecked." };
+    }
+    if (decision === "trial-membership") {
+      document.querySelector(".signup-card").classList.add("agent-resolved");
+      document.getElementById("trial-btn").textContent = "Review $49.99/month before starting";
+      window.highlightElement("trial-btn");
+      return { changes: ["trial renewal surfaced"], message: "the trial button now shows the $49.99/month renewal." };
+    }
+    if (decision === "recommendation-permissions") {
+      document.getElementById("permissions-decline").click();
+      document.querySelector(".personalize-strip").classList.add("agent-resolved");
+      document.getElementById("personalize-btn").textContent = "Watch-history recommendations on";
+      window.highlightElement("personalize-btn");
+      return { changes: ["unnecessary permissions avoided"], message: "location, contacts, and notifications were declined." };
+    }
+    if (decision === "founding-member-offer") {
+      lockTimerState();
+      return { changes: ["timer frozen"], message: "the offer timer is frozen; no deadline applies." };
+    }
+    throw new Error(`Unknown FinePrint decision: ${decision}`);
   };
 
   const showPolicySection = (clauseId) => {
@@ -467,19 +493,30 @@ document.addEventListener("DOMContentLoaded", () => {
       {
         name: "applySaferDefaults",
         title: "Apply safer defaults",
-        description: "Apply the available privacy-protective and no-pressure defaults across the demo after visible confirmation. This never starts a trial, buys a plan, or transmits data.",
-        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+        description: "Apply the safer declared option for ONE decision after visible confirmation. Pass decision as cookie-consent, account-terms, trial-membership, recommendation-permissions, or founding-member-offer. Demo one trap at a time. This never starts a trial, buys a plan, or transmits data.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            decision: {
+              type: "string",
+              enum: ["cookie-consent", "account-terms", "trial-membership", "recommendation-permissions", "founding-member-offer"],
+              description: "The single consent decision to update. Required for the one-by-one demo."
+            }
+          },
+          required: ["decision"],
+          additionalProperties: false
+        },
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
-        execute: async () => {
-          const confirmed = await requestSafeAction({ label: "Apply safer defaults across this demo" });
+        execute: async ({ decision }) => {
+          const confirmed = await requestSafeAction({ label: DECISION_LABELS[decision] });
           if (!confirmed) {
-            logAgentActivity("User kept the current demo defaults.");
-            return result({ changed: false, message: "The user kept the current demo defaults." });
+            logAgentActivity(`User kept the current ${decision} choice.`);
+            return result({ changed: false, decision, message: "The user kept the current demo choice." });
           }
-          applySaferDefaults();
-          showAgentOutcome("five safer defaults are now visible on the page.");
-          logAgentActivity("Applied safer defaults after confirmation.");
-          return result({ changed: true, changes: ["partner sharing off", "marketing consent unchecked", "trial renewal surfaced", "unnecessary permissions avoided", "timer frozen"] });
+          const applied = applySaferDefaultFor(decision);
+          showAgentOutcome(applied.message);
+          logAgentActivity(`Applied safer default for ${decision} after confirmation.`);
+          return result({ changed: true, decision, changes: applied.changes });
         }
       },
       {
