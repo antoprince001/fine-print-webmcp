@@ -28,7 +28,7 @@ The FinePrint dock on the page states the consent-interface framing, copies a ju
 
 | Tool | Type | Purpose |
 | --- | --- | --- |
-| `listConsentDecisions` | Read-only | Lists every decision group, choice id, label, and default-selected flag. Start here. |
+| `listConsentDecisions` | Read-only | Lists every decision group, choice id, label, and default-selected flag.  |
 | `getChoiceDetails` | Read-only | Returns the decision group, default-selection state, and policy references. |
 | `getDecisionImpact` | Read-only | Returns data sharing, financial commitment, renewal, reversibility, and timing. |
 | `getAvailableChoices` | Read-only | Lists alternatives in the same decision group and their declared impacts. |
@@ -42,6 +42,50 @@ The FinePrint dock on the page states the consent-interface framing, copies a ju
 
 Read-only tools have `readOnlyHint: true` and highlight related UI. State-changing tools (except `resetDemo`) open an in-page confirmation sheet. After a confirmed action, the page keeps the safer state visible and logs the call in the FinePrint dock.
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[User opens website in browser] --> B[HTML + CSS + JS app]
+    B --> C[Consent UI / signup flow]
+    B --> D[Policy JSON declaration]
+    B --> E[Legal clause sections with data-clause-id]
+
+    F[WebMCP-enabled browser / agent runtime] --> G[document.modelContext.registerTool]
+    G --> H[listConsentDecisions]
+    G --> I[getChoiceDetails]
+    G --> J[getDecisionImpact]
+    G --> K[getAvailableChoices]
+    G --> L[getPolicyReferences]
+    G --> M[getPolicySection]
+    G --> N[showPolicySection]
+    G --> O[setPrivacyPreference]
+    G --> P[lockInTimerState]
+    G --> Q[applySaferDefaults]
+    G --> R[resetDemo]
+
+    H --> S[Reads declared policy metadata]
+    I --> S
+    J --> S
+    K --> S
+    L --> S
+    M --> E
+    N --> E
+    O --> C
+    P --> C
+    Q --> C
+    R --> C
+
+    C --> T[User confirms action]
+    T --> U[UI updates safely]
+    U --> V[Agent log / highlighted elements]
+
+    W[Policy contract tests] --> X[Validates consistency of policy JSON and clause references]
+    D --> X
+    E --> X
+```
+
+This architecture shows the core pattern: the page exposes a structured consent contract, WebMCP tools read that contract and the linked legal clauses, and state-changing actions still require a human confirmation before they update the UI.
 
 ## Run locally
 
