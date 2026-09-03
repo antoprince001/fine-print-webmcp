@@ -12,7 +12,7 @@ The ten decorative poster backgrounds are local, cropped Unsplash images. Their 
 
 ## What it demonstrates
 
-The page contains five realistic traps:
+The page contains four realistic traps:
 
 1. Cookie consent with a pre-checked partner-sharing choice and a visually dominant accept button.
 2. A bundled Terms checkbox plus a long Terms and Privacy Policy modal with the arbitration clause buried in ordinary legal text.
@@ -35,9 +35,8 @@ The FinePrint dock on the page states the consent-interface framing, copies a ju
 | `getPolicySection` | Read-only | Returns the full text of a terms, cookie, or permission section. |
 | `showPolicySection` | Read-only | Opens the legal document, scrolls to the clause, and highlights it. |
 | `setPrivacyPreference` | State-changing | Applies a privacy-protective demo preference after confirmation. |
-| `lockInTimerState` | State-changing | Freezes the demo timer after confirmation and makes the no-deadline state visible. |
-| `applySaferDefaults` | State-changing | Applies the safer declared option for **one** decision after confirmation. Pass `cookie-consent`, `account-terms`, `trial-membership`, `recommendation-permissions`, or `founding-member-offer`. |
-| `resetDemo` | State-changing | Restores cookie, terms, trial, timer, and receipt state for another run. |
+| `applySaferDefaults` | State-changing | Applies the safer declared option for **one** decision after confirmation. Pass `cookie-consent`, `account-terms`, `trial-membership`, or `recommendation-permissions`. |
+| `resetDemo` | State-changing | Restores cookie, terms, trial, and receipt state for another run. |
 
 Read-only tools have `readOnlyHint: true` and highlight related UI. State-changing tools (except `resetDemo`) open an in-page confirmation sheet. After a confirmed action, the page keeps the safer state visible and logs the call in the FinePrint dock.
 
