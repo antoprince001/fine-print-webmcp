@@ -18,7 +18,6 @@ The page contains five realistic traps:
 2. A bundled Terms checkbox plus a long Terms and Privacy Policy modal with the arbitration clause buried in ordinary legal text.
 3. A free trial that converts to $49.99 per month after 14 days.
 4. A recommendation prompt that asks for precise location, contacts, and notifications.
-5. A founding-price countdown that resets on reload and sells an annual plan.
 
 Each interactable choice has a machine-readable policy declaration embedded in `index.html`. Clause text lives in the legal document with stable `data-clause-id` attributes. Tools read those sources at runtime so an agent can explain the declared contract in plain language. 
 
