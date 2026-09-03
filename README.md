@@ -46,46 +46,26 @@ Read-only tools have `readOnlyHint: true` and highlight related UI. State-changi
 
 ```mermaid
 flowchart TD
-    A[User opens website in browser] --> B[HTML + CSS + JS app]
-    B --> C[Consent UI / signup flow]
-    B --> D[Policy JSON declaration]
-    B --> E[Legal clause sections with data-clause-id]
+    A[User opens website] --> B[Static web app]
+    B --> C[Consent UI + dark-pattern choices]
+    B --> D[Machine-readable policy declaration]
+    B --> E[Legal clauses with data-clause-id]
 
-    F[WebMCP-enabled browser / agent runtime] --> G[document.modelContext.registerTool]
-    G --> H[listConsentDecisions]
-    G --> I[getChoiceDetails]
-    G --> J[getDecisionImpact]
-    G --> K[getAvailableChoices]
-    G --> L[getPolicyReferences]
-    G --> M[getPolicySection]
-    G --> N[showPolicySection]
-    G --> O[setPrivacyPreference]
-    G --> P[lockInTimerState]
-    G --> Q[applySaferDefaults]
-    G --> R[resetDemo]
+    F[WebMCP-enabled agent/browser] --> G[Reads policy + clause data]
+    G --> H[Explains decision impact]
+    G --> I[Opens relevant legal section]
+    H --> J[Human reviews choice]
+    I --> J
 
-    H --> S[Reads declared policy metadata]
-    I --> S
-    J --> S
-    K --> S
-    L --> S
-    M --> E
-    N --> E
-    O --> C
-    P --> C
-    Q --> C
-    R --> C
+    J --> K[User confirms in-page]
+    K --> L[Safer state applied]
+    L --> M[UI updates + agent log]
 
-    C --> T[User confirms action]
-    T --> U[UI updates safely]
-    U --> V[Agent log / highlighted elements]
-
-    W[Policy contract tests] --> X[Validates consistency of policy JSON and clause references]
-    D --> X
-    E --> X
+    D --> N[Policy contract tests]
+    E --> N
 ```
 
-This architecture shows the core pattern: the page exposes a structured consent contract, WebMCP tools read that contract and the linked legal clauses, and state-changing actions still require a human confirmation before they update the UI.
+This architecture shows the core pattern: the page exposes a structured consent contract, the agent inspects that contract and the linked legal clauses, and any state-changing choice still requires a human confirmation before the UI changes.
 
 ## Run locally
 
