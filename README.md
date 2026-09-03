@@ -1,10 +1,10 @@
 # FinePrint
 
-FinePrint is the agent that sits between you and the “I Agree” button.
+FinePrint is a WebMCP-enabled consent layer that sits between a user and the “I Agree” button.
 
-It is an **agent-ready consent interface**: people can understand and make informed choices before they agree to a website’s terms, privacy settings, payments, and permissions. Publishers declare those choices as a structured, testable **consent contract** that a human and their agent inspect through WebMCP.
+It is an **agent-ready consent interface**: people can inspect the consequences of a website’s terms, privacy settings, payments, and permissions before they agree. Publishers declare those choices as a structured, testable **consent contract** that a human and their agent can inspect through WebMCP.
 
-The goal is not to make publishers trustworthy. State-changing tools require on-page confirmation, so the human stays in the loop.
+ State-changing tools require on-page confirmation, so the human stays in the loop.
 
 This is a static hackathon demo. It never collects information, starts a subscription, requests real permissions, or sends data anywhere.
 
