@@ -42,30 +42,21 @@ The FinePrint dock on the page states the consent-interface framing, copies a ju
 
 Read-only tools have `readOnlyHint: true` and highlight related UI. State-changing tools (except `resetDemo`) open an in-page confirmation sheet. After a confirmed action, the page keeps the safer state visible and logs the call in the FinePrint dock.
 
-## Architecture
+## Devpost architecture
 
 ```mermaid
-flowchart TD
-    A[User opens website] --> B[Static web app]
-    B --> C[Consent UI + dark-pattern choices]
-    B --> D[Machine-readable policy declaration]
-    B --> E[Legal clauses with data-clause-id]
-
-    F[WebMCP-enabled agent/browser] --> G[Reads policy + clause data]
-    G --> H[Explains decision impact]
-    G --> I[Opens relevant legal section]
-    H --> J[Human reviews choice]
-    I --> J
-
-    J --> K[User confirms in-page]
-    K --> L[Safer state applied]
-    L --> M[UI updates + agent log]
-
-    D --> N[Policy contract tests]
-    E --> N
+flowchart LR
+    A[User visits a streaming site] --> B[FinePrint consent UI]
+    B --> C[Dark-pattern choices hidden in normal flow]
+    C --> D[WebMCP agent inspects page and policy]
+    D --> E[Explains impact and legal text]
+    E --> F[User reviews safe options]
+    F --> G[Human confirms before change]
+    G --> H[Safer choice applied]
+    H --> I[Page stays transparent and in control]
 ```
 
-This architecture shows the core pattern: the page exposes a structured consent contract, the agent inspects that contract and the linked legal clauses, and any state-changing choice still requires a human confirmation before the UI changes.
+This is the simplest Devpost-friendly view: the site presents consent decisions, the agent reads and explains them, and the user remains in the loop before anything changes.
 
 ## Run locally
 
